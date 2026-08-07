@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پلنر هفتگی مشاور</title>
+<!--<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>-->
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --border: #e2ddd8;
+    --border-dark: #c8c0b8;
+    --text: #1a1714;
+    --text-muted: #7a7168;
+    --accent: #2d5a8e;
+    --accent-light: #e8f0fa;
+    --radius: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-modal: 0 20px 60px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; }
+  .print-watermark {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .watermark-image {
+    width: 400px; /* اندازه لوگو */
+    height: auto;
+    opacity: 0.08; /* میزان شفافیت لوگو در پس‌زمینه */
+    transform: rotate(-30deg); /* چرخش لوگو */
+  }
+  /* TOOLBAR */
+  .toolbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  .toolbar-brand { font-size: 15px; font-weight: 800; color: var(--accent); letter-spacing: -0.3px; margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .btn { border: none; cursor: pointer; font-family: 'Vazirmatn', sans-serif; font-size: 12px; font-weight: 600; border-radius: var(--radius); padding: 7px 14px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #1e4573; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
+  .btn-success { background: #16a34a; color: white; }
+  .btn-success:hover { background: #15803d; }
+  .btn-success:disabled { background: #86efac; cursor: not-allowed; }
+
+  /* CONTAINER */
+  .container { max-width: 100%; margin: 0 auto; padding: 20px; }
+
+  /* META — سه ستون: لوگو | اطلاعات | یادداشت */
+  .meta-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    margin-bottom: 16px; box-shadow: var(--shadow);
+    display: flex; flex-direction: row; align-items: stretch; overflow: hidden;
+  }
+
+  /* ستون ۱: لوگو */
+  .meta-logo {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; background: #1a2744; padding: 18px 20px; flex-shrink: 0; min-width: 140px;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .meta-logo img { height: 68px; width: auto; }
+  .meta-logo-text { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .meta-logo-title { font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: white; white-space: nowrap; text-align: center; }
+  .meta-logo-sub { font-size: 9px; color: rgba(255,255,255,0.55); white-space: nowrap; }
+
+  /* ستون ۲: نام + تاریخ (بالا) / رشته + پایه (پایین) */
+  .meta-info {
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 14px 18px; gap: 10px; border-left: 1px solid var(--border);
+    flex: 0 0 320px;
+  }
+  .meta-info-top { display: flex; gap: 14px; align-items: flex-end; }
+  .meta-info-bottom { display: flex; gap: 14px; align-items: flex-end; border-top: 1px solid var(--border); padding-top: 10px; }
+
+  /* ستون ۳: یادداشت */
+  .meta-notes-col {
+    flex: 1; display: flex; flex-direction: column;
+    padding: 14px 16px; gap: 6px;
+  }
+
+  .meta-field { display: flex; flex-direction: column; gap: 4px; }
+  .meta-field-name { flex: 1; }
+  .meta-field-date { flex: 0 0 100px; }
+  .meta-field-grade { flex: 0 0 90px; }
+
+  .meta-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .meta-input { border: none; border-bottom: 2px solid var(--border); background: transparent; font-family: 'Vazirmatn', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); padding: 4px 0; width: 100%; outline: none; transition: border-color 0.15s; }
+  .meta-input:focus { border-color: var(--accent); }
+  .meta-input::placeholder { color: #ccc; font-weight: 400; }
+  .meta-select { border: none; border-bottom: 2px solid var(--border); background: transparent; font-family: 'Vazirmatn', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); padding: 4px 0; width: 100%; outline: none; transition: border-color 0.15s; cursor: pointer; }
+  .meta-select:focus { border-color: var(--accent); }
+  .meta-notes-input { flex: 1; resize: none; font-family: 'Vazirmatn', sans-serif; font-size: 15px; font-weight: 500; line-height: 1.7; border: 1.5px solid var(--border); border-radius: 4px; padding: 8px 10px; outline: none; background: var(--bg); color: var(--text); transition: border-color 0.15s; width: 100%; }
+  .meta-notes-input:focus { border-color: var(--accent); background: white; }
+
+  /* GRID */
+  .grid-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .grid-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 500px; }
+  th, td { border: 1px solid var(--border); text-align: center; vertical-align: top; }
+  thead tr th:first-child { width: 28px; background: #f0ede8; }
+  /* ارتفاع ثابت برای همه سلول‌های data */
+  tbody td { height: 130px; overflow: hidden; }
+  .time-cell { background: #f7f5f2; padding: 0; position: relative; min-width: 90px; max-width: 120px; }
+  .time-edit { width: 100%; border: none; background: transparent; font-family: 'Vazirmatn', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent); text-align: center; padding: 8px 4px; outline: none; cursor: text; direction: ltr; }
+  .time-edit:focus { background: var(--accent-light); }
+  .time-edit::placeholder { color: #bbb; font-weight: 400; }
+  
+  .delete-time-btn { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border: none; background: #fee2e2; color: #dc2626; cursor: pointer; border-radius: 50%; font-size: 12px; line-height: 1; display: none; align-items: center; justify-content: center; transition: all 0.15s; }
+  .delete-time-btn:hover { background: #fecaca; }
+  .time-cell:hover .delete-time-btn { display: flex; }
+  
+  .add-time-th { background: #f7f5f2; min-width: 40px; padding: 0; }
+  .add-time-btn { width: 100%; height: 100%; min-height: 36px; border: none; background: transparent; cursor: pointer; color: #bbb; font-size: 18px; transition: all 0.15s; font-family: inherit; display: flex; align-items: center; justify-content: center; }
+  .add-time-btn:hover { color: var(--accent); background: var(--accent-light); }
+  .day-label { 
+    background: #f7f5f2; font-size: 13px; font-weight: 800; color: var(--text); 
+    padding: 6px 4px; white-space: nowrap;
+    writing-mode: vertical-rl; text-orientation: mixed;
+    transform: rotate(180deg);
+    text-align: center; vertical-align: middle;
+    width: 28px;
+  }
+  .event-cell { 
+    padding: 2px; 
+    height: 130px; overflow: hidden;
+    cursor: pointer; transition: background 0.1s; 
+  }
+  .event-cell:hover { background: #fafaf9; }
+  .event-cell-inner { 
+    width: 100%; height: 100%;
+    display: flex; align-items: stretch; justify-content: center; 
+    overflow: hidden; min-height: 0;
+  }
+  .empty-hint { color: #ddd; font-size: 18px; line-height: 1; transition: color 0.1s; align-self: center; width: 100%; text-align: center; }
+  .event-cell:hover .empty-hint { color: #c0bab3; }
+
+  .event-chip { 
+    border-radius: 4px; padding: 5px 7px; width: 100%; text-align: right; 
+    cursor: pointer; 
+    height: 100%; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-start; gap: 1px; 
+    transition: opacity 0.15s; 
+  }
+  .event-chip:hover { opacity: 0.85; }
+  .event-breadcrumb { 
+    font-size: 13px; font-weight: 900; line-height: 1.4; letter-spacing: -0.2px; 
+    overflow: hidden; word-break: break-word; white-space: normal;
+  }
+  .event-title-text { 
+    font-size: 12px; font-weight: 800; opacity: 0.85; line-height: 1.35; 
+    overflow: hidden; word-break: break-word; white-space: normal;
+  }
+  .event-notes-text { 
+    font-size: 11px; font-weight: 600; opacity: 0.8; line-height: 1.35; 
+    overflow: hidden; word-break: break-word; white-space: normal;
+  }
+
+  /* iPad touch targets */
+  .btn { padding: 10px 18px; font-size: 13px; }
+  .add-time-btn { min-height: 44px; font-size: 22px; }
+  .tree-select-btn { width: 32px; height: 32px; font-size: 14px; }
+  .tree-enter-btn { width: 36px; height: 36px; font-size: 16px; }
+  .tree-item-label { padding: 8px 6px; font-size: 13px; }
+  .tree-item.back-item { padding: 10px 8px; font-size: 12px; }
+  .grade-tab { padding: 11px 12px; font-size: 12px; }
+  .color-swatch { width: 34px; height: 34px; }
+  .form-input, .form-textarea { padding: 10px 12px; font-size: 14px; }
+  .modal-close { width: 36px; height: 36px; font-size: 22px; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--surface); border-radius: 14px; width: 100%; max-width: 640px; box-shadow: var(--shadow-modal); overflow: hidden; animation: modalIn 0.18s ease; }
+  @keyframes modalIn { from { transform: scale(0.95) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+  .modal-header { background: var(--accent); color: white; padding: 18px 22px; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+  .modal-close { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 20px; line-height: 1; padding: 0; font-family: inherit; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { color: white; }
+  .modal-body { padding: 22px; display: flex; flex-direction: column; gap: 18px; max-height: 78vh; overflow-y: auto; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; display: flex; align-items: center; gap: 5px; }
+  .form-input, .form-textarea { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-family: 'Vazirmatn', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; background: var(--bg); }
+  .form-input:focus, .form-textarea:focus { border-color: var(--accent); background: white; }
+  .form-textarea { resize: vertical; min-height: 65px; }
+
+  /* TREE - improved navigation */
+  .tree-nav { border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--bg); overflow: hidden; }
+  .tree-breadcrumb { padding: 8px 12px; background: var(--accent-light); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--accent); font-weight: 700; min-height: 32px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .tree-list { max-height: 260px; overflow-y: auto; padding: 6px; }
+  
+  .tree-item-row { display: flex; align-items: center; gap: 4px; border-radius: 5px; padding: 2px 4px; transition: background 0.1s; margin-bottom: 1px; }
+  .tree-item-row:hover { background: #f0ede8; }
+  .tree-item-row.row-selected { background: #e8f0fa; }
+
+  /* دکمه انتخاب مبحث */
+  .tree-select-btn { 
+    flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; 
+    border: 1.5px solid var(--border); background: white; cursor: pointer;
+    font-size: 12px; display: flex; align-items: center; justify-content: center;
+    color: #aaa; transition: all 0.15s; font-family: inherit;
+  }
+  .tree-select-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .tree-select-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* نام مبحث */
+  .tree-item-label { 
+    flex: 1; font-size: 13px; font-weight: 500; text-align: right; 
+    cursor: pointer; padding: 8px 6px; line-height: 1.4;
+  }
+  .tree-item-label:hover { color: var(--accent); }
+  .row-selected .tree-item-label { font-weight: 700; color: var(--accent); }
+
+  /* دکمه ورود به زیرمجموعه */
+  .tree-enter-btn { 
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 5px;
+    border: 1.5px solid var(--border); background: #f7f5f2; cursor: pointer;
+    font-size: 14px; display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); transition: all 0.15s; font-family: inherit;
+  }
+  .tree-enter-btn:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* بازگشت */
+  .tree-item.back-item { color: var(--text-muted); font-size: 11px; border-bottom: 1px solid var(--border); margin-bottom: 4px; padding: 6px 8px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 5px; }
+  .tree-item.back-item:hover { background: var(--accent-light); }
+
+  .grade-tabs { display: flex; border-bottom: 1px solid var(--border); background: #f7f5f2; }
+  .grade-tab { flex: 1; padding: 8px 12px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--text-muted); transition: all 0.15s; }
+  .grade-tab:hover { background: var(--accent-light); color: var(--accent); }
+  .grade-tab.active { background: var(--accent); color: white; }
+
+  /* COLOR */
+  .color-row { display: flex; gap: 6px; flex-wrap: wrap; max-width: 320px; }
+  .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform 0.1s, border-color 0.1s; flex-shrink: 0; }
+  .color-swatch:hover { transform: scale(1.2); }
+  .color-swatch.selected { border-color: #333; transform: scale(1.15); box-shadow: 0 0 0 1px #333; }
+  .modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-start; }
+
+  .icon { width: 16px; height: 16px; stroke-width: 2; }
+  .icon-sm { width: 14px; height: 14px; }
+  .loading-indicator { padding: 20px; text-align: center; color: var(--text-muted); font-size: 12px; }
+
+  /* ===== PRINT ===== */
+  @media print {
+    @page { size: A4 landscape; margin: 3mm; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    .toolbar, .no-print, .day-note-row, .notes-card { display: none !important; }
+    body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 7px; }
+    .container { padding: 0; margin: 0; max-width: 100%; width: 100%; }
+
+    /* ── meta ── */
+    .meta-card { border: 1px solid #aaa; box-shadow: none; margin-bottom: 2px; }
+    .meta-logo { padding: 4px 8px !important; min-width: 70px !important; }
+    .meta-logo img { height: 28px !important; }
+    .meta-logo-title { font-size: 7px !important; }
+    .meta-logo-sub { font-size: 5px !important; }
+    .meta-info { padding: 3px 8px !important; gap: 2px !important; flex: 0 0 180px !important; }
+    .meta-info-top, .meta-info-bottom { gap: 6px !important; }
+    .meta-info-bottom { padding-top: 2px !important; }
+    .meta-field { gap: 0; }
+    .meta-label { font-size: 5px !important; }
+    .meta-input { font-size: 8px !important; border-bottom: none !important; padding: 0 !important; }
+    .meta-select { display: none !important; }
+    .meta-grade-print { display: block !important; font-size: 8px !important; font-weight: 700; padding: 0; }
+    .meta-notes-col { padding: 3px 8px !important; }
+    .meta-notes-input { font-size: 6px !important; border: none !important; padding: 1px 0 !important; background: transparent !important; resize: none; }
+
+    /* ── جدول ── */
+    .grid-card { box-shadow: none; border: 1px solid #aaa; margin-top: 0; }
+    .grid-scroll { overflow: visible !important; }
+    .add-time-th, .add-time-btn, .delete-time-btn { display: none !important; }
+
+    table {
+      width: 100% !important;
+      min-width: 0 !important;
+      table-layout: fixed;
+      border-collapse: collapse;
+      page-break-inside: avoid;
+      height: calc(100vh - 32mm) !important;
+    }
+    /* هر ردیف ارتفاع یکسان از کل ارتفاع جدول */
+    tbody tr { height: calc((100vh - 42mm) / 7) !important; }
+    th, td { border: 0.5px solid #bbb !important; }
+
+    /* ستون روز — باریک چون عمودی نوشته میشه */
+    thead tr th:first-child { width: 16px !important; }
+    tbody td:first-child { width: 16px !important; }
+
+    /* ستون زمان */
+    .time-cell { width: 28px !important; min-width: 0 !important; max-width: none !important; padding: 0 !important; }
+    .time-edit { font-size: 7.5px !important; padding: 1px !important; white-space: pre-wrap; word-break: break-all; color: #333 !important; }
+
+    .day-label {
+      font-size: 8px !important; padding: 2px !important;
+      background: #f0f0f0 !important;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      vertical-align: middle !important; white-space: nowrap !important;
+      writing-mode: vertical-rl; text-orientation: mixed;
+      transform: rotate(180deg); text-align: center;
+      width: 18px !important;
+    }
+
+    /* خانه‌های ایونت — ارتفاع از CSS variable (تنظیم smart) */
+    tbody td { height: inherit !important; overflow: hidden !important; padding: 1px !important; }
+    .event-cell { padding: 1px !important; height: 100% !important; overflow: hidden !important; }
+    .event-cell-inner { height: 100% !important; min-height: 0 !important; overflow: hidden !important; }
+
+    .event-chip {
+      height: 100% !important; min-height: 0 !important;
+      padding: 2px 3px !important; gap: 1px !important;
+      overflow: hidden !important; justify-content: flex-start !important;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .event-breadcrumb {
+      font-size: var(--print-font-bc, 12.5px) !important; font-weight: 800 !important; line-height: 1.3 !important;
+      overflow: hidden !important; word-break: break-word !important; white-space: normal !important;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .event-title-text { font-size: var(--print-font-title, 9px) !important; line-height: 1.2 !important; overflow: hidden !important; word-break: break-word !important; white-space: normal !important; }
+    .event-notes-text { font-size: var(--print-font-title, 7px) !important; line-height: 1.2 !important; overflow: hidden !important; word-break: break-word !important; white-space: normal !important; }
+    .empty-hint { display: none !important; }
+
+    /* watermark */
+    body::after {
+      content: "Famo Konkur Academy";
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%,-50%) rotate(-35deg);
+      font-size: 40px; font-weight: 900;
+      color: rgba(26,39,68,0.04); white-space: nowrap;
+      pointer-events: none; z-index: 9999;
+      font-family: Arial, sans-serif;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+  }
+
+
+  /* ── Multi-select ── */
+  .event-cell.cell-selected { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--accent-light) !important; }
+  .event-cell.cell-selecting { cursor: crosshair; }
+  #multi-action-bar { 
+    display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #1a2744; color: white; border-radius: 40px; padding: 10px 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25); z-index: 500;
+    gap: 10px; align-items: center; font-size: 13px; font-weight: 600;
+  }
+  #multi-action-bar.visible { display: flex; }
+  #multi-action-bar button { background: rgba(255,255,255,0.15); border: none; color: white; border-radius: 20px; padding: 6px 14px; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 600; transition: background 0.15s; }
+  #multi-action-bar button:hover { background: rgba(255,255,255,0.3); }
+  #multi-action-bar .bar-cancel { background: transparent; opacity: 0.6; }
+
+  /* ── یادداشت روز ── */
+  .day-note-row td { border-top: none !important; padding: 0 !important; height: auto !important; }
+  /* خانه‌های خالی ردیف یادداشت — بدون border */
+  .day-note-cell { border: none !important; background: transparent; padding: 0 !important; }
+  /* فقط خانه اول (زیر نام روز) border-top دارد */
+  .day-note-cell:first-child { background: #fafaf8 !important; border-left: 1px solid var(--border) !important; border-right: 1px solid var(--border) !important; border-bottom: 1px solid var(--border) !important; }
+  .day-note-wrap { display: flex; align-items: flex-start; gap: 4px; padding: 3px 5px 5px; border-top: 1px dashed var(--border); }
+  .day-note-label { font-size: 9px; color: #bbb; padding-top: 5px; flex-shrink: 0; }
+  .day-note-input { flex: 1; border: none; background: transparent; font-family: 'Vazirmatn', sans-serif; font-size: 11px; color: var(--text-muted); resize: none; outline: none; min-height: 22px; max-height: 60px; line-height: 1.5; overflow: hidden; width: 100%; }
+  .day-note-input:focus { color: var(--text); }
+  .day-note-input::placeholder { color: #ccc; }
+  .day-note-row { display: table-row; }
+
+  /* ── پنل بارگذاری برنامه شاگرد ── */
+  #load-panel { 
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  #load-panel.active { display: flex; }
+  #load-panel-inner {
+    background: white; border-radius: 14px; width: 100%; max-width: 520px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; animation: modalIn 0.18s ease;
+  }
+  #load-panel-header { background: #1a2744; color: white; padding: 16px 20px; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+  #load-panel-header button { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 20px; font-family: inherit; }
+  #load-panel-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; max-height: 70vh; overflow-y: auto; }
+  .lp-search { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-family: 'Vazirmatn', sans-serif; font-size: 14px; width: 100%; outline: none; }
+  .lp-search:focus { border-color: var(--accent); }
+  .lp-list { display: flex; flex-direction: column; gap: 6px; }
+  .lp-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+  .lp-item:hover { border-color: var(--accent); background: var(--accent-light); }
+  .lp-item-info { display: flex; flex-direction: column; gap: 2px; }
+  .lp-item-name { font-size: 14px; font-weight: 700; }
+  .lp-item-meta { font-size: 11px; color: var(--text-muted); }
+  .lp-item-plans { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+  .lp-plan-btn { font-size: 11px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-family: inherit; color: var(--text); transition: all 0.12s; white-space: nowrap; }
+  .lp-plan-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .lp-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px; }
+
+  /* ── Multi-topic در مودال ── */
+  .selected-topics-list { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; }
+  .topic-tag { display: flex; align-items: center; justify-content: space-between; background: var(--accent-light); border: 1px solid #93c5fd; border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: var(--accent); }
+  .topic-tag button { background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 14px; line-height: 1; padding: 0 0 0 4px; font-family: inherit; }
+  .topic-tag button:hover { color: #dc2626; }
+  .topics-hint { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+  .tree-list::-webkit-scrollbar { width: 4px; }
+  .tree-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+  .modal-body::-webkit-scrollbar { width: 4px; }
+  .modal-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+  /* یادداشت هفتگی */
+  .notes-card { 
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 16px; margin-top: 12px; box-shadow: var(--shadow);
+  }
+  .notes-label { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; }
+  .notes-textarea { 
+    width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); font-family: 'Vazirmatn', sans-serif; font-size: 15px;
+    color: var(--text); padding: 10px 12px; outline: none; resize: vertical;
+    min-height: 90px; line-height: 1.8; transition: border-color 0.15s;
+  }
+  .notes-textarea:focus { border-color: var(--accent); background: white; }
+  /* یادداشت داخل مودال */
+  .form-textarea { font-size: 14px !important; line-height: 1.7; }
+
+  @media print {
+    body::after {
+      content: "Famo Konkur Academy";
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-35deg);
+      font-size: 56px; font-weight: 900;
+      color: rgba(26, 39, 68, 0.055);
+      white-space: nowrap; pointer-events: none; z-index: 9999;
+      letter-spacing: 3px; font-family: Arial, sans-serif;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="print-watermark">
+    <!-- لوگوی خود را اینجا قرار دهید. جایگزین آدرس src زیر کنید -->
+    <img src="logoo.PNG/500x500" alt="Watermark" class="watermark-image">
+  </div>
+<div class="toolbar no-print">
+  <span class="toolbar-brand"><i data-lucide="clipboard-list" class="icon"></i> پلنر هفتگی مشاور</span>
+  <span id="save-status" style="font-size:12px;color:var(--text-muted);"></span>
+  <button class="btn btn-ghost" onclick="resetTimesToDefault()" title="بازگشت تایم‌ها به حالت پیش‌فرض"><i data-lucide="clock" class="icon-sm"></i> ریست تایم</button>
+  <button class="btn btn-ghost" onclick="openLoadPanel()"><i data-lucide="users" class="icon-sm"></i> بارگذاری برنامه</button>
+  <button class="btn btn-ghost" onclick="clearAll()"><i data-lucide="trash-2" class="icon-sm"></i> پاک کردن</button>
+  <button class="btn btn-success" id="btn-save-server" onclick="savePlanToServer()"><i data-lucide="cloud-upload" class="icon-sm"></i> ذخیره در سرور</button>
+  <button class="btn btn-primary" onclick="smartPrint()"><i data-lucide="printer" class="icon-sm"></i> چاپ A4</button>
+</div>
+
+<div id="multi-action-bar">
+  <span id="multi-count">۰ خانه انتخاب شده</span>
+  <button onclick="openModalForSelected()"><i data-lucide="plus" style="width:12px;height:12px;display:inline-block"></i> افزودن به همه</button>
+  <button onclick="clearSelectedCells()" class="bar-cancel">✕ لغو</button>
+</div>
+
+<div class="container">
+  <div class="meta-card">
+
+    <!-- ستون ۱: لوگو -->
+    <div class="meta-logo">
+      <img src="logo.png" alt="Famo Logo">
+      <div class="meta-logo-text">
+        <span class="meta-logo-title">Famo Konkur Academy</span>
+        <span class="meta-logo-sub">برنامه‌ریزی هفتگی</span>
+      </div>
+    </div>
+
+    <!-- ستون ۲: نام+تاریخ بالا / رشته+پایه پایین -->
+    <div class="meta-info">
+      <div class="meta-info-top">
+        <div class="meta-field meta-field-name">
+          <span class="meta-label">نام دانش‌آموز</span>
+          <input class="meta-input" id="meta-name" type="text" placeholder="نام کامل..." oninput="saveState()">
+        </div>
+        <div class="meta-field meta-field-date">
+          <span class="meta-label">تاریخ</span>
+          <input class="meta-input" id="meta-date" type="text" placeholder="۱۴۰۴/..." oninput="saveState()">
+        </div>
+      </div>
+      <div class="meta-info-bottom">
+        <div class="meta-field meta-field-grade" id="meta-major-wrap">
+          <span class="meta-label">رشته</span>
+          <select class="meta-select" id="meta-major" onchange="onMajorOrGradeChange()">
+            <option value="">انتخاب کنید</option>
+            <option value="math">ریاضی</option>
+            <option value="tajrobi">تجربی</option>
+            <option value="humanities">انسانی</option>
+          </select>
+          <span class="meta-grade-print" id="meta-major-print"></span>
+        </div>
+        <div class="meta-field meta-field-grade">
+          <span class="meta-label">پایه</span>
+          <select class="meta-select" id="meta-grade" onchange="onMajorOrGradeChange()">
+            <option value="">انتخاب کنید</option>
+            <optgroup label="متوسطه اول">
+              <option value="7th">هفتم</option>
+              <option value="8th">هشتم</option>
+              <option value="9th">نهم</option>
+            </optgroup>
+            <optgroup label="متوسطه دوم">
+              <option value="10th">دهم</option>
+              <option value="11th">یازدهم</option>
+              <option value="12th">دوازدهم</option>
+            </optgroup>
+          </select>
+          <span class="meta-grade-print" id="meta-grade-print"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ستون ۳: یادداشت هفتگی -->
+    <div class="meta-notes-col">
+      <span class="meta-label">📝 یادداشت هفتگی</span>
+      <textarea class="meta-notes-input" id="weekly-notes" placeholder="یادداشت‌های کلی هفته را اینجا بنویسید..." oninput="saveState()"></textarea>
+    </div>
+
+  </div>
+
+  <div class="grid-card">
+    <div class="grid-scroll">
+      <table id="planner-table">
+        <thead>
+          <tr id="header-row">
+            <th class="day-label" style="background:#f0ede8;border:1px solid var(--border);">روز / زمان</th>
+            <th class="add-time-th no-print">
+              <button class="add-time-btn" onclick="addTimeColumn()" title="افزودن ستون زمان"><i data-lucide="plus" class="icon"></i></button>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="planner-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- LOAD PANEL -->
+<div id="load-panel" onclick="if(event.target===this)closeLoadPanel()">
+  <div id="load-panel-inner">
+    <div id="load-panel-header">
+      <span>📂 بارگذاری برنامه دانش‌آموز</span>
+      <button onclick="closeLoadPanel()">×</button>
+    </div>
+    <div id="load-panel-body">
+      <input class="lp-search" id="lp-search" type="text" placeholder="جستجوی نام دانش‌آموز..." oninput="filterLoadList()">
+      <div class="lp-list" id="lp-list"><div class="lp-empty">در حال بارگذاری...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOverlay(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span id="modal-title">افزودن برنامه</span>
+      <button class="modal-close" onclick="closeModal()"><i data-lucide="x" class="icon"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label"><i data-lucide="book-open" class="icon-sm"></i> مباحث <span class="topics-hint">(می‌توانید چند مبحث انتخاب کنید)</span></label>
+        <div id="selected-topics-list" class="selected-topics-list" style="display:none;margin-bottom:6px;"></div>
+        <div class="tree-nav">
+          <div class="grade-tabs" id="grade-tabs"></div>
+          <div class="tree-breadcrumb" id="tree-breadcrumb">ابتدا رشته و پایه را انتخاب کنید</div>
+          <div class="tree-list" id="tree-list"></div>
+        </div>
+        <input type="hidden" id="sel-topic-id">
+        <input type="hidden" id="sel-topic-path">
+        <input type="hidden" id="sel-topic-label">
+        <input type="hidden" id="sel-topic-short">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><i data-lucide="pencil" class="icon-sm"></i> نوع فعالیت</label>
+        <select class="form-input" id="event-title-preset" onchange="onPresetChange()">
+          <option value="">— انتخاب از لیست —</option>
+          <optgroup label="تکالیف">
+            <option>درس روز</option>
+            <option>درس فردا</option>
+            <option>مرور</option>
+          </optgroup>
+          <optgroup label="تمرین و تست">
+            <option>حل تمرین</option>
+            <option>تست کتاب</option>
+            <option>تست کنکور</option>
+            <option>تست زماندار</option>
+            <option>کار با منبع</option>
+          </optgroup>
+          <optgroup label="آزمون">
+            <option>آزمون تشریحی</option>
+            <option>آزمون چهارگزینه‌ای</option>
+            <option>شبیه‌سازی کنکور</option>
+          </optgroup>
+          <optgroup label="مطالعه">
+            <option>مطالعه درسنامه</option>
+            <option>مطالعه کتاب درسی</option>
+            <option>مطالعه موازی کتاب و درسنامه</option>
+          </optgroup>
+          <optgroup label="سایر">
+            <option>رفع اشکال</option>
+            <option>ویدیو</option>
+            <option>جمع بندی</optin>
+            <option>ناهار</option>
+            <option>شام</option>
+            <option>صبحانه</option>
+            <option>استراحت</option>
+            <option>مدرسه</option>
+            <option>کلاس</option>
+            <option>فرهنگیان</option>
+            <option value="__custom__">✏️ دستی بنویس...</option>
+          </optgroup>
+        </select>
+        <input class="form-input" id="event-title" type="text" placeholder="نوع فعالیت را بنویسید..." style="display:none;margin-top:6px">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><i data-lucide="file-text" class="icon-sm"></i> یادداشت (اختیاری)</label>
+        <textarea class="form-textarea" id="event-notes" placeholder="توضیح بیشتر..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><i data-lucide="palette" class="icon-sm"></i> رنگ</label>
+        <div class="color-row" id="color-row"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveEvent()"><i data-lucide="save" class="icon-sm"></i> ذخیره</button>
+      <button class="btn btn-danger" id="btn-delete" onclick="deleteEvent()" style="display:none"><i data-lucide="trash-2" class="icon-sm"></i> حذف</button>
+      <button class="btn btn-ghost" onclick="closeModal()">بستن</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS = ['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'];
+const MIDDLE_SCHOOL_MAP = { "7th": 2, "8th": 3, "9th": 4 };
+const CURRICULUM_MAP = {
+  math:       { "10th": 1602, "11th": 1603, "12th": 13775 },
+  humanities: { "10th": 5639, "11th": 5640, "12th": 13820 },
+  tajrobi:    { "10th": 9183, "11th": 9184, "12th": 13810 }
+};
+const GRADE_LABELS = { "7th":"هفتم","8th":"هشتم","9th":"نهم","10th":"دهم","11th":"یازدهم","12th":"دوازدهم" };
+function isMiddleSchool(g) { return ['7th','8th','9th'].includes(g); }
+
+const COLORS = [
+  // آبی‌ها - طیف روشن تا تیره
+  { id:'sky',     bg:'#e0f2fe',text:'#0c4a6e',border:'#7dd3fc', label:'آبی خیلی روشن' },
+  { id:'blue',    bg:'#dbeafe',text:'#1e3a8a',border:'#93c5fd', label:'آبی' },
+  { id:'indigo',  bg:'#e0e7ff',text:'#1e1b4b',border:'#a5b4fc', label:'نیلی' },
+  { id:'navy',    bg:'#c7d2fe',text:'#1e40af',border:'#818cf8', label:'آبی نفتی' },
+  // فیروزه‌ای،‌ سیان، teal
+  { id:'cyan',    bg:'#cffafe',text:'#164e63',border:'#67e8f9', label:'سیان' },
+  { id:'teal',    bg:'#ccfbf1',text:'#134e4a',border:'#5eead4', label:'فیروزه‌ای' },
+  { id:'aqua',    bg:'#e0fcff',text:'#133b5c',border:'#76e4f7', label:'آکوآ' },
+  // سبزها و ارتعاشاتش
+  { id:'green',     bg:'#dcfce7',text:'#14532d',border:'#86efac', label:'سبز' },
+  { id:'emerald',   bg:'#d1fae5',text:'#064e3b',border:'#6ee7b7', label:'زمردی' },
+  { id:'mint',      bg:'#f0fff4',text:'#064e3b',border:'#bbf7d0', label:'نعنایی' },
+  { id:'lime',      bg:'#ecfccb',text:'#365314',border:'#bef264', label:'لیمویی' },
+  { id:'olive',     bg:'#fafaf0',text:'#585c1b',border:'#d9e67a', label:'زیتونی' },
+  // زردها و کهربا
+  { id:'yellow',     bg:'#fef9c3',text:'#713f12',border:'#fde047', label:'زرد' },
+  { id:'gold',       bg:'#fefce8',text:'#854d0e',border:'#eab308', label:'طلایی' },
+  { id:'amber',      bg:'#fef3c7',text:'#78350f',border:'#fcd34d', label:'کهربا' },
+  // نارنجی‌ها
+  { id:'orange',    bg:'#ffedd5',text:'#7c2d12',border:'#fdba74', label:'نارنجی' },
+  { id:'peach',     bg:'#fff7ed',text:'#9a3412',border:'#fdba74', label:'هلو' },
+  // صورتی‌ها تا قرمزها
+  { id:'rose',    bg:'#ffe4e6',text:'#881337',border:'#fda4af', label:'رز' },
+  { id:'pink',    bg:'#fce7f3',text:'#831843',border:'#f9a8d4', label:'پینک' },
+  { id:'fuchsia', bg:'#fae8ff',text:'#701a75',border:'#e879f9', label:'فوشیا' },
+  { id:'red',     bg:'#fee2e2',text:'#7f1d1d',border:'#fca5a5', label:'قرمز' },
+  { id:'crimson', bg:'#f8d7da',text:'#842029',border:'#f5c2c7', label:'قرمز تیره' },
+  // بنفش‌ها و ترکیب‌هایش
+  { id:'violet',  bg:'#ede9fe',text:'#3b0764',border:'#c4b5fd', label:'بنفش تیره' },
+  { id:'purple',  bg:'#f3e8ff',text:'#4c1d95',border:'#d8b4fe', label:'بنفش' },
+  { id:'lavender',bg:'#f6e6ff',text:'#6d28d9',border:'#e9d5ff', label:'یاس بنفش' },
+  // نهایی: خنثی‌ها
+  { id:'slate',   bg:'#f1f5f9',text:'#0f172a',border:'#cbd5e1', label:'سلیت' },
+  { id:'gray',    bg:'#f3f4f6',text:'#1f2937',border:'#d1d5db', label:'خاکستری' },
+  { id:'stone',   bg:'#fafaf9',text:'#44403c',border:'#d6d3d1', label:'استون' },
+  { id:'brown',   bg:'#fdf2e4',text:'#5c3317',border:'#d4a06a', label:'قهوه‌ای' },
+];
+
+function shortenLabel(l) {
+  if (!l) return l;
+  const i = l.indexOf(':');
+  return i > -1 ? l.substring(0, i).trim() : l;
+}
+
+// حداکثر N کلمه + ... اگه بیشتر بود
+function truncateWords(str, maxWords = 3) {
+  if (!str) return str;
+  const words = str.trim().split(/\s+/);
+  if (words.length <= maxWords) return str;
+  return words.slice(0, maxWords).join(' ') + '…';
+}
+
+// فقط آخرین بخش path رو truncate کن، بقیه دست نخور
+function truncatePath(pathShort, maxWords = 4) {
+  if (!pathShort) return pathShort;
+  const parts = pathShort.split('|').map(s => s.trim());
+  if (parts.length === 0) return pathShort;
+  // فقط آخرین part = اسم ریزمبحث
+  parts[parts.length - 1] = truncateWords(parts[parts.length - 1], maxWords);
+  return parts.join(' | ');
+}
+
+// برای prefix مشترک — بدون truncate (فصل‌ها کوتاه هستن)
+function displayPrefix(parts) {
+  return parts.join(' | ');
+}
+
+let TOPIC_TREE = {};
+let topicTreeLoaded = false;
+
+async function loadTopicTree() {
+  try {
+    const r = await fetch('lernito_topic_tree.json');
+    if (!r.ok) throw new Error('not found');
+    TOPIC_TREE = await r.json();
+    topicTreeLoaded = true;
+  } catch(e) {
+    console.error('topic tree:', e);
+  }
+}
+
+// ── STATE ──
+let state = {
+  meta: { major:'', grade:'' },
+  times: ['5-6','6-7','7-8','8-9','9-10','10-11','11-12','12-13','13-14','14-15','15-16','16-17','17-18','18-19','19-20','20-21','21-22','22-23','23-24'],
+  events: [],
+  dayNotes: {},      // { 0: 'یادداشت شنبه', 1: '...' }
+  weeklyNotes: ''
+};
+
+// ── MULTI-SELECT ──
+let selectedCells = new Set(); // Set of 'di_ti' strings
+let isMultiMode = false;
+
+function toggleMultiMode(on) {
+  isMultiMode = on;
+  if (!on) { selectedCells.clear(); updateMultiBar(); }
+  document.querySelectorAll('.event-cell').forEach(td => {
+    td.classList.toggle('cell-selecting', on);
+  });
+}
+
+function toggleCellSelect(di, ti) {
+  const key = `${di}_${ti}`;
+  if (selectedCells.has(key)) selectedCells.delete(key);
+  else selectedCells.add(key);
+  const td = document.querySelector(`td[data-day="${di}"][data-time="${ti}"]`);
+  if (td) td.classList.toggle('cell-selected', selectedCells.has(key));
+  updateMultiBar();
+}
+
+function updateMultiBar() {
+  const bar = document.getElementById('multi-action-bar');
+  const cnt = selectedCells.size;
+  if (cnt > 0) {
+    bar.classList.add('visible');
+    document.getElementById('multi-count').textContent = cnt + ' خانه انتخاب شده';
+    lucide.createIcons();
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+function clearSelectedCells() {
+  selectedCells.forEach(key => {
+    const [di, ti] = key.split('_');
+    const td = document.querySelector(`td[data-day="${di}"][data-time="${ti}"]`);
+    if (td) td.classList.remove('cell-selected');
+  });
+  selectedCells.clear();
+  updateMultiBar();
+}
+
+function openModalForSelected() {
+  if (selectedCells.size === 0) return;
+  // باز کردن مودال برای اولین خانه، بقیه رو بعد از save پر میکنه
+  const [di, ti] = [...selectedCells][0].split('_').map(Number);
+  currentCell = { dayIndex: di, timeIndex: ti };
+  editingEventId = null;
+  isMultiSave = true;
+  _openModalInternal(di, ti, null);
+}
+
+let isMultiSave = false;
+
+let currentCell = null;
+let editingEventId = null;
+let nav = { path: [] };
+let selectedColor = 'green';
+let currentCurriculumRootId = null;
+let availableGrades = [];
+let selectedTreeGrade = null;
+
+// ── چندتا مبحث ──
+let selectedTopics = []; // [{id, label, pathShort, path}]
+
+function addSelectedTopic(node, pathShort, fullPath) {
+  // جلوگیری از تکرار
+  if (selectedTopics.find(t => t.id === String(node._id))) return;
+  selectedTopics.push({ id: String(node._id), label: node.label, pathShort, path: fullPath });
+  renderSelectedTopics();
+  renderTreeLevel(nav.path.length > 0 ? nav.path[nav.path.length-1] : currentCurriculumRootId);
+}
+
+function removeSelectedTopic(id) {
+  selectedTopics = selectedTopics.filter(t => t.id !== id);
+  renderSelectedTopics();
+  renderTreeLevel(nav.path.length > 0 ? nav.path[nav.path.length-1] : currentCurriculumRootId);
+}
+
+function renderSelectedTopics() {
+  const container = document.getElementById('selected-topics-list');
+  if (!container) return;
+  if (selectedTopics.length === 0) { container.style.display = 'none'; return; }
+  container.style.display = 'flex';
+  container.innerHTML = '';
+  selectedTopics.forEach(t => {
+    const tag = document.createElement('div');
+    tag.className = 'topic-tag';
+    tag.innerHTML = `<span>${t.pathShort || t.label}</span><button onclick="removeSelectedTopic('${t.id}')">×</button>`;
+    container.appendChild(tag);
+  });
+  // آپدیت hidden inputs با اولین مبحث (برای backward compat)
+  document.getElementById('sel-topic-id').value    = selectedTopics[0].id;
+  document.getElementById('sel-topic-path').value  = selectedTopics[0].path;
+  document.getElementById('sel-topic-label').value = selectedTopics[0].label;
+  document.getElementById('sel-topic-short').value = selectedTopics[0].pathShort;
+  updateBreadcrumb();
+}
+
+// ── META ──
+function updatePrintSpans() {
+  const ml = {'':'','math':'ریاضی','tajrobi':'تجربی','humanities':'انسانی'};
+  const gl = {'':'','7th':'هفتم','8th':'هشتم','9th':'نهم','10th':'دهم','11th':'یازدهم','12th':'دوازدهم'};
+  const ms = document.getElementById('meta-major-print');
+  const gs = document.getElementById('meta-grade-print');
+  if (ms) ms.textContent = ml[document.getElementById('meta-major').value] || '';
+  if (gs) gs.textContent = gl[document.getElementById('meta-grade').value] || '';
+}
+
+async function init() {
+  await loadTopicTree();
+  loadState();
+  renderBody();
+  renderHeader();
+  renderColorPicker();
+  loadMetaFields();
+  const notes = document.getElementById('weekly-notes');
+  if (notes && state.weeklyNotes) notes.value = state.weeklyNotes;
+  // Ctrl+click برای multi-select
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeLoadPanel(); clearSelectedCells(); }
+    if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('active')) {
+      if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') saveEvent();
+    }
+  });
+  lucide.createIcons();
+}
+
+function loadMetaFields() {
+  ['name','date','advisor'].forEach(k => {
+    const el = document.getElementById('meta-' + k);
+    if (el && state.meta[k]) el.value = state.meta[k];
+  });
+  if (state.meta.major) document.getElementById('meta-major').value = state.meta.major;
+  if (state.meta.grade) document.getElementById('meta-grade').value = state.meta.grade;
+  updateCurriculumRoot();
+  updatePrintSpans();
+}
+
+function saveMeta() {
+  ['name','date','advisor'].forEach(k => {
+    const el = document.getElementById('meta-' + k);
+    if (el) state.meta[k] = el.value;
+  });
+  state.meta.major = document.getElementById('meta-major').value;
+  state.meta.grade = document.getElementById('meta-grade').value;
+}
+
+function onPresetChange() {
+  const preset = document.getElementById('event-title-preset').value;
+  const ci = document.getElementById('event-title');
+  if (preset === '__custom__') { ci.style.display = ''; ci.value = ''; ci.focus(); }
+  else ci.style.display = 'none';
+}
+
+function onMajorOrGradeChange() {
+  saveMeta(); updateCurriculumRoot(); updatePrintSpans(); saveState();
+}
+
+function updateCurriculumRoot() {
+  const major = state.meta.major, grade = state.meta.grade;
+  const mw = document.getElementById('meta-major-wrap');
+  if (mw) mw.style.display = isMiddleSchool(grade) ? 'none' : '';
+  availableGrades = [];
+  if (grade === '12th') availableGrades = ['12th','11th','10th'];
+  else if (grade === '11th') availableGrades = ['11th','10th'];
+  else availableGrades = [grade];
+  selectedTreeGrade = grade;
+  if (!grade) { currentCurriculumRootId = null; return; }
+  if (isMiddleSchool(grade)) { currentCurriculumRootId = MIDDLE_SCHOOL_MAP[grade]; }
+  else if (major && CURRICULUM_MAP[major]?.[grade]) { currentCurriculumRootId = CURRICULUM_MAP[major][grade]; }
+  else currentCurriculumRootId = null;
+}
+
+// ── RENDER ──
+function renderHeader() {
+  const row = document.getElementById('header-row');
+  while (row.children.length > 2) row.removeChild(row.children[1]);
+  const last = row.lastElementChild;
+  state.times.forEach((t, i) => {
+    const th = document.createElement('th');
+    th.className = 'time-cell';
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.className = 'time-edit';
+    inp.value = t; inp.placeholder = 'زمان...'; inp.dataset.idx = i;
+    inp.addEventListener('input', e => { state.times[+e.target.dataset.idx] = e.target.value; saveState(); });
+    const del = document.createElement('button');
+    del.className = 'delete-time-btn no-print'; del.title = 'حذف'; del.innerHTML = '×';
+    del.addEventListener('click', e => { e.stopPropagation(); deleteTimeColumn(i); });
+    th.appendChild(inp); th.appendChild(del);
+    row.insertBefore(th, last);
+  });
+  lucide.createIcons();
+}
+
+function deleteTimeColumn(i) {
+  if (state.times.length <= 1) { alert('حداقل یک ستون لازم است'); return; }
+  state.events = state.events.filter(e => e.timeIndex !== i);
+  state.events.forEach(e => { if (e.timeIndex > i) e.timeIndex--; });
+  state.times.splice(i, 1);
+  saveState(); renderHeader(); renderBody();
+}
+
+function renderBody() {
+  const tbody = document.getElementById('planner-body');
+  tbody.innerHTML = '';
+  DAYS.forEach((day, di) => {
+    // ردیف اصلی
+    const tr = document.createElement('tr');
+    const tdDay = document.createElement('td');
+    tdDay.className = 'day-label'; tdDay.textContent = day;
+    tr.appendChild(tdDay);
+    state.times.forEach((_, ti) => {
+      const td = document.createElement('td');
+      td.className = 'event-cell';
+      td.dataset.day = di; td.dataset.time = ti;
+      renderCell(td, di, ti);
+      // کلیک با Ctrl = multi-select
+      td.addEventListener('click', e => {
+        if (e.ctrlKey || e.metaKey || isMultiMode) {
+          e.stopPropagation();
+          toggleCellSelect(di, ti);
+          return;
+        }
+        // کلیک معمولی
+        if (td._hasEvent) openModal(di, ti, td._eventId);
+        else openModal(di, ti, null);
+      });
+      tr.appendChild(td);
+    });
+    const tdAdd = document.createElement('td');
+    tdAdd.className = 'no-print';
+    tdAdd.style.cssText = 'border:1px solid var(--border);background:#fafaf9;';
+    tr.appendChild(tdAdd);
+    tbody.appendChild(tr);
+
+
+  });
+}
+
+function renderCell(td, di, ti) {
+  td._hasEvent = false; td._eventId = null;
+  const ev = state.events.find(e => e.dayIndex === di && e.timeIndex === ti);
+  const inner = document.createElement('div');
+  inner.className = 'event-cell-inner';
+
+  if (ev) {
+    td._hasEvent = true; td._eventId = ev.id;
+    const col = COLORS.find(c => c.id === ev.color) || COLORS[1];
+    const chip = document.createElement('div');
+    chip.className = 'event-chip';
+    chip.style.cssText = `background:${col.bg};color:${col.text};border:1px solid ${col.border}`;
+
+    // نمایش مباحث — prefix مشترک یک‌بار، بعد فقط برچسب منحصربه‌فرد هر مبحث
+    const topics = ev.topics || (ev.topicPathShort ? [{ pathShort: ev.topicPathShort }] : []);
+    if (topics.length === 1) {
+      const b = document.createElement('div');
+      b.className = 'event-breadcrumb';
+      b.textContent = truncatePath(topics[0].pathShort || topics[0].path || '');
+      chip.appendChild(b);
+    } else if (topics.length > 1) {
+      const allParts = topics.map(t => (t.pathShort || '').split('|').map(s => s.trim()));
+      // پیدا کردن prefix مشترک
+      let prefixLen = 0;
+      const minLen = Math.min(...allParts.map(p => p.length));
+      for (let i = 0; i < minLen - 1; i++) {
+        if (allParts.every(p => p[i] === allParts[0][i])) prefixLen = i + 1;
+        else break;
+      }
+      // prefix مشترک یک بار
+      if (prefixLen > 0) {
+        const b = document.createElement('div');
+        b.className = 'event-breadcrumb';
+        b.textContent = displayPrefix(allParts[0].slice(0, prefixLen));
+        chip.appendChild(b);
+      }
+      // فقط بخش منحصربه‌فرد هر مبحث با · جدا شده
+      const uniqueParts = allParts.map(p => p.slice(prefixLen).join(' | ')).filter(Boolean);
+      if (uniqueParts.length > 0) {
+        const b = document.createElement('div');
+        b.className = 'event-breadcrumb';
+        b.style.fontWeight = '700';
+        b.textContent = uniqueParts.map(u => truncateWords(u, 4)).join(' · ');
+        chip.appendChild(b);
+      }
+    } else if (ev.topicPathShort || ev.topicPath) {
+      const b = document.createElement('div');
+      b.className = 'event-breadcrumb';
+      b.textContent = truncatePath(ev.topicPathShort || ev.topicPath);
+      chip.appendChild(b);
+    }
+
+    if (ev.title) {
+      const tt = document.createElement('div');
+      tt.className = 'event-title-text'; tt.textContent = ev.title;
+      chip.appendChild(tt);
+    }
+    if (ev.notes) {
+      const nt = document.createElement('div');
+      nt.className = 'event-notes-text'; nt.textContent = ev.notes;
+      chip.appendChild(nt);
+    }
+    inner.appendChild(chip);
+  } else {
+    const hint = document.createElement('span');
+    hint.className = 'empty-hint'; hint.textContent = '+';
+    inner.appendChild(hint);
+  }
+  td.innerHTML = '';
+  td.appendChild(inner);
+}
+
+function addTimeColumn() {
+  state.times.push('');
+  saveState(); renderHeader(); renderBody();
+}
+
+// ── MODAL ──
+function openModal(di, ti, eventId) {
+  currentCell = { dayIndex: di, timeIndex: ti };
+  editingEventId = eventId;
+  isMultiSave = false;
+  _openModalInternal(di, ti, eventId);
+}
+
+function _openModalInternal(di, ti, eventId) {
+  const day = DAYS[di], time = state.times[ti] || '';
+  document.getElementById('modal-title').textContent =
+    (editingEventId ? 'ویرایش' : isMultiSave ? `افزودن به ${selectedCells.size} خانه` : 'افزودن') +
+    ' — ' + day + (time ? ' / ' + time : '');
+
+  document.getElementById('event-title').value = '';
+  document.getElementById('event-title').style.display = 'none';
+  document.getElementById('event-title-preset').value = '';
+  document.getElementById('event-notes').value = '';
+  document.getElementById('sel-topic-id').value = '';
+  document.getElementById('sel-topic-path').value = '';
+  document.getElementById('sel-topic-label').value = '';
+  document.getElementById('sel-topic-short').value = '';
+  selectedTopics = [];
+  const stl = document.getElementById('selected-topics-list');
+  if (stl) { stl.innerHTML = ''; stl.style.display = 'none'; }
+  nav.path = [];
+  selectedColor = 'green';
+  saveMeta(); updateCurriculumRoot();
+
+  if (eventId) {
+    const ev = state.events.find(e => e.id === eventId);
+    if (ev) {
+      document.getElementById('event-notes').value = ev.notes || '';
+      const presetEl = document.getElementById('event-title-preset');
+      const customEl = document.getElementById('event-title');
+      const titleVal = ev.title || '';
+      const opts = Array.from(presetEl.options).map(o => o.value).filter(v => v && v !== '__custom__');
+      if (titleVal && opts.includes(titleVal)) { presetEl.value = titleVal; customEl.style.display = 'none'; }
+      else if (titleVal) { presetEl.value = '__custom__'; customEl.value = titleVal; customEl.style.display = ''; }
+      // بازیابی مباحث
+      if (ev.topics && ev.topics.length > 0) {
+        selectedTopics = ev.topics.map(t => ({...t}));
+        renderSelectedTopics();
+      } else if (ev.topicId) {
+        selectedTopics = [{ id: ev.topicId, label: ev.topicLabel, pathShort: ev.topicPathShort, path: ev.topicPath }];
+        renderSelectedTopics();
+      }
+      selectedColor = ev.color || 'green';
+      if (ev.selectedGrade) {
+        selectedTreeGrade = ev.selectedGrade;
+        currentCurriculumRootId = isMiddleSchool(ev.selectedGrade)
+          ? MIDDLE_SCHOOL_MAP[ev.selectedGrade]
+          : (CURRICULUM_MAP[state.meta.major]?.[ev.selectedGrade] || currentCurriculumRootId);
+      }
+    }
+    document.getElementById('btn-delete').style.display = '';
+  } else {
+    document.getElementById('btn-delete').style.display = 'none';
+  }
+
+  renderColorPicker();
+  renderGradeTabs();
+  initTree();
+  document.getElementById('modal-overlay').classList.add('active');
+  setTimeout(() => document.getElementById('event-title-preset').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+  if (!isMultiSave) isMultiSave = false;
+}
+function closeModalOverlay(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+function renderGradeTabs() {
+  const tc = document.getElementById('grade-tabs');
+  tc.innerHTML = '';
+  if (availableGrades.length <= 1) { tc.style.display = 'none'; return; }
+  tc.style.display = 'flex';
+  availableGrades.forEach(grade => {
+    const tab = document.createElement('button');
+    tab.className = 'grade-tab' + (grade === selectedTreeGrade ? ' active' : '');
+    tab.textContent = GRADE_LABELS[grade];
+    tab.addEventListener('click', () => {
+      selectedTreeGrade = grade;
+      currentCurriculumRootId = isMiddleSchool(grade)
+        ? MIDDLE_SCHOOL_MAP[grade]
+        : (CURRICULUM_MAP[state.meta.major]?.[grade] || null);
+      nav.path = [];
+      renderGradeTabs(); initTree();
+    });
+    tc.appendChild(tab);
+  });
+}
+
+function initTree() {
+  nav.path = [];
+  if (!topicTreeLoaded) {
+    document.getElementById('tree-breadcrumb').textContent = 'در حال بارگذاری...';
+    document.getElementById('tree-list').innerHTML = '<div class="loading-indicator">لطفاً صبر کنید...</div>';
+    return;
+  }
+  if (!currentCurriculumRootId) {
+    const g = state.meta.grade;
+    document.getElementById('tree-breadcrumb').textContent = isMiddleSchool(g) ? 'ابتدا پایه را انتخاب کنید' : 'ابتدا رشته و پایه را انتخاب کنید';
+    document.getElementById('tree-list').innerHTML = '<div style="padding:10px;color:#aaa;font-size:12px;text-align:center;">پایه/رشته انتخاب نشده</div>';
+    return;
+  }
+  renderTreeLevel(currentCurriculumRootId);
+  updateBreadcrumb();
+}
+
+function renderTreeLevel(nodeId) {
+  const list = document.getElementById('tree-list');
+  list.innerHTML = '';
+  const node = TOPIC_TREE[String(nodeId)];
+  if (!node) return;
+
+  if (nav.path.length > 0) {
+    const back = document.createElement('div');
+    back.className = 'tree-item back-item'; back.textContent = '↑ بازگشت';
+    back.addEventListener('click', () => {
+      nav.path.pop();
+      const goTo = nav.path.length > 0 ? nav.path[nav.path.length-1] : currentCurriculumRootId;
+      renderTreeLevel(goTo); updateBreadcrumb();
+    });
+    list.appendChild(back);
+  }
+
+  const children = node.children || [];
+  if (!children.length) {
+    list.innerHTML += '<div style="padding:10px;color:#aaa;font-size:11px;text-align:center;">زیرمجموعه‌ای وجود ندارد</div>';
+    return;
+  }
+
+  children.forEach(childId => {
+    const child = TOPIC_TREE[String(childId)];
+    if (!child) return;
+    const hasKids = !!(child.children?.length);
+    const isSelected = selectedTopics.some(t => t.id === String(child._id));
+
+    const row = document.createElement('div');
+    row.className = 'tree-item-row' + (isSelected ? ' row-selected' : '');
+
+    const selectBtn = document.createElement('button');
+    selectBtn.className = 'tree-select-btn' + (isSelected ? ' active' : '');
+    selectBtn.textContent = isSelected ? '✓' : '○';
+    selectBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (isSelected) removeSelectedTopic(String(child._id));
+      else selectTopic(child, nodeId);
+      renderTreeLevel(nodeId);
+    });
+
+    const labelEl = document.createElement('span');
+    labelEl.className = 'tree-item-label';
+    labelEl.textContent = child.label;
+    labelEl.addEventListener('click', () => {
+      if (isSelected) removeSelectedTopic(String(child._id));
+      else selectTopic(child, nodeId);
+      renderTreeLevel(nodeId);
+    });
+
+    row.appendChild(selectBtn); row.appendChild(labelEl);
+
+    if (hasKids) {
+      const enterBtn = document.createElement('button');
+      enterBtn.className = 'tree-enter-btn'; enterBtn.textContent = '←';
+      enterBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        nav.path.push(nodeId);
+        renderTreeLevel(child._id); updateBreadcrumb();
+      });
+      row.appendChild(enterBtn);
+    }
+    list.appendChild(row);
+  });
+}
+
+function selectTopic(node, currentNodeId) {
+  const allNodeIds = [...nav.path, currentNodeId].filter(id => id !== undefined && String(id) !== String(currentCurriculumRootId));
+  const allNodes   = allNodeIds.map(id => TOPIC_TREE[String(id)]).filter(Boolean);
+
+  let subjectLabel = allNodes.length > 0 ? allNodes[0].label : node.label;
+  const topicShort = shortenLabel(node.label);
+  const gradeLabel = GRADE_LABELS[selectedTreeGrade] || '';
+
+  // مسیر کامل با shortenLabel روی هر سطح: درس | پایه | فصل ۸ | ریزمبحث
+  const pathParts = [...allNodes.map(n => shortenLabel(n.label)), shortenLabel(node.label)];
+  if (gradeLabel && pathParts.length > 1) pathParts.splice(1, 0, gradeLabel);
+  else if (gradeLabel && pathParts.length === 1) pathParts.push(gradeLabel);
+  let shortPathStr = pathParts.join(' | ');
+
+  const fullLabels = [...allNodes.map(n => n.label), node.label];
+  let pathStr = fullLabels.join(' > ');
+  if (selectedTreeGrade && selectedTreeGrade !== state.meta.grade) pathStr = `[${gradeLabel}] ` + pathStr;
+
+  addSelectedTopic(node, shortPathStr, pathStr);
+}
+
+function getSubjectNameFromPath() {
+  if (nav.path.length > 0) {
+    const n = TOPIC_TREE[String(nav.path[0])];
+    if (n) return n.label;
+  }
+  // از selectedTopics
+  if (selectedTopics.length > 0) {
+    const p = selectedTopics[0].pathShort || '';
+    return p.split('|')[0].trim();
+  }
+  return '';
+}
+
+function updateBreadcrumb() {
+  const bc = document.getElementById('tree-breadcrumb');
+  if (selectedTopics.length > 0) {
+    bc.innerHTML = `<i data-lucide="check" class="icon-sm" style="color:#166534"></i> ${selectedTopics.length} مبحث انتخاب شده`;
+    lucide.createIcons();
+  } else if (nav.path.length > 0) {
+    const labels = nav.path.map(id => TOPIC_TREE[String(id)]?.label).filter(Boolean);
+    bc.textContent = labels.join(' > ');
+  } else {
+    bc.textContent = 'مبحث را انتخاب کنید...';
+  }
+}
+
+function renderColorPicker() {
+  const row = document.getElementById('color-row');
+  row.innerHTML = '';
+  COLORS.forEach(c => {
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch' + (c.id === selectedColor ? ' selected' : '');
+    sw.style.cssText = `background:${c.bg};border-color:${c.border};`;
+    sw.title = c.label;
+    sw.addEventListener('click', () => { selectedColor = c.id; renderColorPicker(); });
+    row.appendChild(sw);
+  });
+}
+
+function saveEvent() {
+  if (!currentCell) return;
+  const presetEl = document.getElementById('event-title-preset');
+  const customEl = document.getElementById('event-title');
+  const title = presetEl.value === '__custom__' ? customEl.value.trim() : (presetEl.value || '').trim();
+  const notes = document.getElementById('event-notes').value.trim();
+  const subjectName = getSubjectNameFromPath();
+  const gradeLabel = selectedTreeGrade ? GRADE_LABELS[selectedTreeGrade] : '';
+
+  // مباحث ذخیره‌شده
+  const topicsToSave = selectedTopics.length > 0 ? [...selectedTopics] : [];
+  const firstTopic = topicsToSave[0] || null;
+
+  if (!title && topicsToSave.length === 0) {
+    const inp = document.getElementById('event-title-preset');
+    inp.style.borderColor = '#dc2626'; inp.focus();
+    setTimeout(() => inp.style.borderColor = '', 1500);
+    return;
+  }
+
+  const baseEvent = {
+    title, notes, subjectName, gradeLabel,
+    selectedGrade: selectedTreeGrade,
+    color: selectedColor,
+    topics: topicsToSave,
+    // backward compat
+    topicId:        firstTopic?.id        || '',
+    topicPath:      firstTopic?.path      || '',
+    topicLabel:     firstTopic?.label     || '',
+    topicPathShort: firstTopic?.pathShort || '',
+  };
+
+  if (isMultiSave) {
+    // ذخیره در همه خانه‌های انتخاب‌شده
+    selectedCells.forEach(key => {
+      const [di, ti] = key.split('_').map(Number);
+      const existing = state.events.find(e => e.dayIndex === di && e.timeIndex === ti);
+      if (existing) {
+        Object.assign(existing, baseEvent);
+      } else {
+        state.events.push({ id: 'ev_' + Date.now() + '_' + key, dayIndex: di, timeIndex: ti, ...baseEvent, createdAt: new Date().toISOString() });
+      }
+    });
+    clearSelectedCells();
+    isMultiSave = false;
+  } else if (editingEventId) {
+    const ev = state.events.find(e => e.id === editingEventId);
+    if (ev) Object.assign(ev, baseEvent);
+  } else {
+    state.events.push({ id: 'ev_' + Date.now(), dayIndex: currentCell.dayIndex, timeIndex: currentCell.timeIndex, ...baseEvent, createdAt: new Date().toISOString() });
+  }
+
+  saveState(); renderBody(); closeModal();
+}
+
+function deleteEvent() {
+  if (!editingEventId) return;
+  state.events = state.events.filter(e => e.id !== editingEventId);
+  saveState(); renderBody(); closeModal();
+}
+
+function clearAll() {
+  if (!confirm('همه برنامه‌ها پاک شوند؟')) return;
+  state.events = []; saveState(); renderBody();
+}
+
+function resetTimesToDefault() {
+  if (!confirm('تایم‌های جدول به حالت پیش‌فرض (۵ تا ۲۴) برگردد؟')) return;
+  state.times = [...DEFAULT_TIMES];
+  saveState(); renderHeader(); renderBody();
+}
+
+function saveState() {
+  saveMeta();
+  const notes = document.getElementById('weekly-notes');
+  if (notes) state.weeklyNotes = notes.value;
+  try { localStorage.setItem('planner_v2', JSON.stringify(state)); } catch(e) {}
+}
+
+const DEFAULT_TIMES = ['5:00-6:00','6:00-7:00','7:00-8:00','8:00-9:00','9:00-10:00','10:00-11:00','11:00-12:00','12:00-1:00','1:00-2:00','2:00-3:00','3:00-4:00','4:00-5:00','5:00-6:00','6:00-7:00','7:00-8:00','8:00-9:00','9:00-10:00','10:00-11:00'];
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('planner_v2');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state = { ...state, ...saved };
+      // اگه times قدیمی بود (کمتر از ۱۰ تا) یا نبود، defaults بذار
+      if (!saved.times || saved.times.length < 10) {
+        state.times = [...DEFAULT_TIMES];
+      }
+    }
+  } catch(e) {}
+}
+
+// ── LOAD PANEL ──
+let allStudentsData = [];
+let allPlansData = [];
+
+async function openLoadPanel() {
+  document.getElementById('load-panel').classList.add('active');
+  document.getElementById('lp-search').value = '';
+  document.getElementById('lp-list').innerHTML = '<div class="lp-empty">در حال بارگذاری...</div>';
+  try {
+    const [sRes, pRes] = await Promise.all([
+      fetch(`${API_BASE}/students.php`),
+      fetch(`${API_BASE}/reports.php?type=all_students`)
+    ]);
+    const sData = await sRes.json();
+    const pData = await pRes.json();
+    allStudentsData = sData.students || [];
+    // برنامه‌های هر student
+    const allPlans = pData.students || [];
+    allPlansData = allPlans;
+    renderLoadList(allStudentsData);
+  } catch(e) {
+    document.getElementById('lp-list').innerHTML = '<div class="lp-empty">خطا در اتصال به سرور</div>';
+  }
+}
+
+function closeLoadPanel() {
+  document.getElementById('load-panel').classList.remove('active');
+}
+
+function filterLoadList() {
+  const q = document.getElementById('lp-search').value.toLowerCase().trim();
+  const filtered = q ? allStudentsData.filter(s => s.name.toLowerCase().includes(q)) : allStudentsData;
+  renderLoadList(filtered);
+}
+
+const GRADE_LABELS_FA = {'7th':'هفتم','8th':'هشتم','9th':'نهم','10th':'دهم','11th':'یازدهم','12th':'دوازدهم'};
+const MAJOR_LABELS_FA = {'math':'ریاضی','tajrobi':'تجربی','humanities':'انسانی'};
+
+function renderLoadList(students) {
+  const list = document.getElementById('lp-list');
+  if (!students.length) { list.innerHTML = '<div class="lp-empty">دانش‌آموزی یافت نشد</div>'; return; }
+  list.innerHTML = '';
+  students.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'lp-item';
+    const info = document.createElement('div');
+    info.className = 'lp-item-info';
+    const name = document.createElement('div');
+    name.className = 'lp-item-name'; name.textContent = s.name;
+    const meta = document.createElement('div');
+    meta.className = 'lp-item-meta';
+    meta.textContent = [GRADE_LABELS_FA[s.grade], MAJOR_LABELS_FA[s.major]].filter(Boolean).join(' — ');
+    info.appendChild(name); info.appendChild(meta);
+
+    const plansDiv = document.createElement('div');
+    plansDiv.className = 'lp-item-plans';
+
+    // دکمه "هفته جاری" = لود تایمز + پاک کردن ایونت‌ها
+    const newBtn = document.createElement('button');
+    newBtn.className = 'lp-plan-btn';
+    newBtn.textContent = '🗓 برنامه جدید';
+    newBtn.addEventListener('click', async () => {
+      await loadStudentTimesOnly(s);
+      closeLoadPanel();
+    });
+    plansDiv.appendChild(newBtn);
+
+    // برنامه‌های قبلی
+    if (s.plan_count > 0) {
+      // دکمه آخرین برنامه
+      const lastBtn = document.createElement('button');
+      lastBtn.className = 'lp-plan-btn';
+      lastBtn.textContent = `📋 آخرین برنامه (${s.last_week_date || '—'})`;
+      lastBtn.addEventListener('click', async () => {
+        await loadLastPlan(s.id);
+        closeLoadPanel();
+      });
+      plansDiv.appendChild(lastBtn);
+    }
+
+    item.appendChild(info); item.appendChild(plansDiv);
+    list.appendChild(item);
+  });
+}
+
+async function loadStudentTimesOnly(student) {
+  // فقط اطلاعات دانش‌آموز + تایم‌های آخرین برنامه‌اش رو لود کن — بدون ایونت
+  try {
+    const res = await fetch(`${API_BASE}/plans.php?student_id=${student.id}`);
+    const data = await res.json();
+    const plans = data.plans || [];
+
+    // آپدیت meta
+    state.meta.name  = student.name;
+    state.meta.grade = student.grade;
+    state.meta.major = student.major || '';
+    state.meta.date  = '';
+    state.events = [];
+    state.dayNotes = {};
+
+    if (plans.length > 0) {
+      // لود تایم‌های آخرین برنامه
+      const lastPlan = plans[0];
+      const planRes = await fetch(`${API_BASE}/plans.php?id=${lastPlan.id}`);
+      const planData = await planRes.json();
+      if (planData.plan && planData.plan.times_json) {
+        try {
+          const times = JSON.parse(planData.plan.times_json);
+          if (times && times.length) state.times = times;
+        } catch(e) {}
+      }
+    }
+
+    saveState(); loadMetaFields(); renderHeader(); renderBody();
+    document.getElementById('save-status').textContent = `✓ ${student.name} بارگذاری شد`;
+    document.getElementById('save-status').style.color = '#16a34a';
+  } catch(e) {
+    alert('خطا در بارگذاری اطلاعات دانش‌آموز');
+  }
+}
+
+async function loadLastPlan(studentId) {
+  try {
+    // لیست برنامه‌های این دانش‌آموز
+    const res = await fetch(`${API_BASE}/plans.php?student_id=${studentId}`);
+    const data = await res.json();
+    const plans = data.plans || [];
+    if (!plans.length) { alert('برنامه‌ای یافت نشد'); return; }
+
+    // آخرین برنامه
+    const planRes = await fetch(`${API_BASE}/plans.php?id=${plans[0].id}`);
+    const planData = await planRes.json();
+    if (!planData.success) { alert('خطا در بارگذاری برنامه'); return; }
+
+    const plan = planData.plan;
+    const events = planData.events || [];
+
+    // پیدا کردن اطلاعات دانش‌آموز
+    const student = allStudentsData.find(s => s.id === studentId) || {};
+
+    state.meta.name  = student.name  || plan.student_name || '';
+    state.meta.grade = student.grade || plan.grade || '';
+    state.meta.major = student.major || plan.major || '';
+    state.meta.date  = plan.week_date || '';
+    state.weeklyNotes = plan.weekly_notes || '';
+
+    if (plan.times_json) {
+      try { const t = JSON.parse(plan.times_json); if (t?.length) state.times = t; } catch(e) {}
+    }
+
+    // تبدیل ایونت‌های دیتابیس به فرمت state
+    state.events = events.map(ev => ({
+      id: 'ev_loaded_' + ev.id,
+      dayIndex:       ev.day_index,
+      timeIndex:      ev.time_index,
+      title:          ev.title || '',
+      notes:          ev.notes || '',
+      color:          ev.color || 'green',
+      topicId:        ev.topic_id || '',
+      topicPath:      ev.topic_path || '',
+      topicLabel:     ev.topic_label || '',
+      topicPathShort: ev.topic_path_short || '',
+      subjectName:    ev.subject_name || '',
+      selectedGrade:  ev.selected_grade || '',
+      topics: ev.topic_path_short ? [{ id: ev.topic_id, label: ev.topic_label, pathShort: ev.topic_path_short, path: ev.topic_path }] : []
+    }));
+
+    state.dayNotes = {};
+
+    saveState(); loadMetaFields(); renderHeader(); renderBody();
+    const notes = document.getElementById('weekly-notes');
+    if (notes) notes.value = state.weeklyNotes;
+    document.getElementById('save-status').textContent = `✓ برنامه ${plan.week_date || ''} بارگذاری شد`;
+    document.getElementById('save-status').style.color = '#16a34a';
+  } catch(e) {
+    console.error(e);
+    alert('خطا در بارگذاری برنامه');
+  }
+}
+
+// ── SERVER SAVE ──
+const API_BASE = 'api';
+
+async function savePlanToServer() {
+  saveMeta();
+  const notes = document.getElementById('weekly-notes');
+  if (notes) state.weeklyNotes = notes.value;
+
+  if (!state.meta.name?.trim()) { alert('لطفاً نام دانش‌آموز را وارد کنید'); document.getElementById('meta-name').focus(); return; }
+  if (!state.meta.grade) { alert('لطفاً پایه را انتخاب کنید'); return; }
+  if (!state.events.length) { alert('هیچ برنامه‌ای برای ذخیره وجود ندارد'); return; }
+
+  const btn = document.getElementById('btn-save-server');
+  const status = document.getElementById('save-status');
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader" class="icon-sm"></i> در حال ذخیره...';
+  lucide.createIcons(); status.textContent = '';
+
+  try {
+    const res = await fetch(`${API_BASE}/plans.php`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.style.color = '#16a34a';
+      status.textContent = `✓ ${data.saved} — شناسه: #${data.plan_id}`;
+      state.lastPlanId = data.plan_id;
+      localStorage.setItem('planner_v2', JSON.stringify(state));
+    } else {
+      status.style.color = '#dc2626';
+      status.textContent = '✗ ' + (data.error || 'خطا');
+    }
+  } catch(e) {
+    status.style.color = '#dc2626'; status.textContent = '✗ خطا در اتصال به سرور';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i data-lucide="cloud-upload" class="icon-sm"></i> ذخیره در سرور';
+    lucide.createIcons();
+  }
+}
+
+
+// =========================================================
+// Smart Print — اندازه‌گیری جدول و تنظیم خودکار فونت
+// A4 landscape قابل چاپ: ~277mm × ~190mm
+// =========================================================
+function smartPrint() {
+  const table = document.getElementById('planner-table');
+  if (!table) { window.print(); return; }
+
+  // اندازه واقعی جدول در پیکسل
+  const tableW = table.scrollWidth;
+  const tableH = table.scrollHeight;
+
+  // A4 landscape با margin 3mm: ~283mm x 197mm
+  // در 96dpi: 1mm ≈ 3.78px  →  283mm≈1069px, 197mm≈745px
+  // ولی چاپگر معمولاً 72-96dpi — از mm مستقیم استفاده می‌کنیم
+  // نسبت: چون CSS print از px صفحه حساب نمیکنه، scale رو با data-attr میذاریم
+  
+  // تعداد ستون‌های زمان
+  const colCount = state.times.length;
+  // تعداد ردیف‌ها: 7 روز
+  const rowCount = 7;
+
+  // threshold ها:
+  // اگه ستون > 14 → فونت خیلی کوچیک + truncate=3
+  // اگه ستون 10-14 → فونت کوچیک + truncate=4  
+  // اگه ستون < 10 → فونت متوسط + truncate=5 یا بدون truncate
+
+  let fontSize, truncateMax, cellH;
+  if (colCount > 16) {
+    fontSize = 6.5; truncateMax = 2; cellH = 44;
+  } else if (colCount > 12) {
+    fontSize = 9.5;   truncateMax = 3; cellH = 50;
+  } else if (colCount > 8) {
+    fontSize = 10.5;   truncateMax = 4; cellH = 58;
+  } else if (colCount > 5) {
+    fontSize = 13;   truncateMax = 5; cellH = 68;
+  } else {
+    fontSize = 9.5; truncateMax = 99; cellH = 82;
+  }
+
+  // set روی root برای استفاده در print CSS
+  document.documentElement.style.setProperty('--print-font-bc',   fontSize + 'px');
+  document.documentElement.style.setProperty('--print-font-title', (fontSize - 0.5) + 'px');
+  document.documentElement.style.setProperty('--print-cell-h',    cellH + 'px');
+  document.documentElement.style.setProperty('--print-truncate',  truncateMax);
+
+  // re-render با truncate جدید برای نمایش
+  PRINT_TRUNCATE_MAX = truncateMax;
+  
+  window.print();
+
+  // بعد از چاپ reset
+  setTimeout(() => {
+    PRINT_TRUNCATE_MAX = null;
+    document.documentElement.style.removeProperty('--print-font-bc');
+    document.documentElement.style.removeProperty('--print-font-title');
+    document.documentElement.style.removeProperty('--print-cell-h');
+    document.documentElement.style.removeProperty('--print-truncate');
+  }, 2000);
+}
+
+// متغیر global برای تعداد کلمات در print
+let PRINT_TRUNCATE_MAX = null;
+
+init();
+</script>
+</body>
+</html>
