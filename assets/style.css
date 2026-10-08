@@ -1,0 +1,1722 @@
+  :root {
+      --bg: #f8f7f4;
+      --surface: #ffffff;
+      --border: #e2ddd8;
+      --border-dark: #c8c0b8;
+      --text: #1a1714;
+      --text-muted: #7a7168;
+      --accent: #2d5a8e;
+      --accent-light: #e8f0fa;
+      --radius: 6px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+  }
+
+  body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 13px;
+  }
+
+  .print-watermark {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+  }
+
+  .watermark-image {
+      width: 400px;
+      /* اندازه لوگو */
+      height: auto;
+      opacity: 0.08;
+      /* میزان شفافیت لوگو در پس‌زمینه */
+      transform: rotate(-30deg);
+      /* چرخش لوگو */
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+  }
+
+  .toolbar-brand {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+  }
+
+  .btn {
+      border: none;
+      cursor: pointer;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius);
+      padding: 7px 14px;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+  }
+
+  .btn-primary {
+      background: var(--accent);
+      color: white;
+  }
+
+  .btn-primary:hover {
+      background: #1e4573;
+  }
+
+  .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+      background: var(--bg);
+      color: var(--text);
+  }
+
+  .btn-success {
+      background: #16a34a;
+      color: white;
+  }
+
+  .btn-success:hover {
+      background: #15803d;
+  }
+
+  .btn-success:disabled {
+      background: #86efac;
+      cursor: not-allowed;
+  }
+
+  /* CONTAINER */
+  .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+  }
+
+  /* META — سه ستون: لوگو | اطلاعات | یادداشت */
+  .meta-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      overflow: hidden;
+  }
+
+  /* ستون ۱: لوگو */
+  .meta-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #1a2744;
+      padding: 18px 20px;
+      flex-shrink: 0;
+      min-width: 140px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+  }
+
+  .meta-logo img {
+      height: 68px;
+      width: auto;
+  }
+
+  .meta-logo-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+  }
+
+  .meta-logo-title {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: white;
+      white-space: nowrap;
+      text-align: center;
+  }
+
+  .meta-logo-sub {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.55);
+      white-space: nowrap;
+  }
+
+  /* ستون ۲: نام + تاریخ (بالا) / رشته + پایه (پایین) */
+  .meta-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 18px;
+      gap: 10px;
+      border-left: 1px solid var(--border);
+      flex: 0 0 320px;
+  }
+
+  .meta-info-top {
+      display: flex;
+      gap: 14px;
+      align-items: flex-end;
+  }
+
+  .meta-info-bottom {
+      display: flex;
+      gap: 14px;
+      align-items: flex-end;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+  }
+
+  /* ستون ۳: یادداشت */
+  .meta-notes-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 16px;
+      gap: 6px;
+  }
+
+  .meta-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+  }
+
+  .meta-field-name {
+      flex: 1;
+  }
+
+  .meta-field-date {
+      flex: 0 0 100px;
+  }
+
+  .meta-field-grade {
+      flex: 0 0 90px;
+  }
+
+  .meta-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+  }
+
+  .meta-input {
+      border: none;
+      border-bottom: 2px solid var(--border);
+      background: transparent;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      padding: 4px 0;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s;
+  }
+
+  .meta-input:focus {
+      border-color: var(--accent);
+  }
+
+  .meta-input::placeholder {
+      color: #ccc;
+      font-weight: 400;
+  }
+
+  .meta-select {
+      border: none;
+      border-bottom: 2px solid var(--border);
+      background: transparent;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      padding: 4px 0;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s;
+      cursor: pointer;
+  }
+
+  .meta-select:focus {
+      border-color: var(--accent);
+  }
+
+  .meta-notes-input {
+      flex: 1;
+      resize: none;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.7;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 10px;
+      outline: none;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color 0.15s;
+      width: 100%;
+  }
+
+  .meta-notes-input:focus {
+      border-color: var(--accent);
+      background: white;
+  }
+
+  /* GRID */
+  .grid-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+  }
+
+  .grid-scroll {
+      overflow-x: auto;
+  }
+
+  table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+  }
+
+  th,
+  td {
+      border: 1px solid var(--border);
+      text-align: center;
+      vertical-align: top;
+  }
+
+  thead tr th:first-child {
+      width: 28px;
+      background: #f0ede8;
+  }
+
+  /* ارتفاع ثابت برای همه سلول‌های data */
+  tbody td {
+      height: 130px;
+      overflow: hidden;
+  }
+
+  .time-cell {
+      background: #f7f5f2;
+      padding: 0;
+      position: relative;
+      min-width: 90px;
+      max-width: 120px;
+      vertical-align: middle;
+  }
+
+  .time-edit {
+      display: block;
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: center;
+      padding: 5px 4px;
+      outline: none;
+      cursor: text;
+      direction: ltr;
+      line-height: 1.35;
+  }
+
+  /* .time-edit-start {
+      border-bottom: 1px dashed var(--border);
+  } */
+
+  .time-edit:focus {
+      background: var(--accent-light);
+  }
+
+  .time-edit::placeholder {
+      color: #bbb;
+      font-weight: 400;
+  }
+
+  .delete-time-btn {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border: none;
+      background: #fee2e2;
+      color: #dc2626;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 12px;
+      line-height: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+  }
+
+  .delete-time-btn:hover {
+      background: #fecaca;
+  }
+
+  .time-cell:hover .delete-time-btn {
+      display: flex;
+  }
+
+  .add-time-th {
+      background: #f7f5f2;
+      min-width: 40px;
+      padding: 0;
+  }
+
+  .add-time-btn {
+      width: 100%;
+      height: 100%;
+      min-height: 36px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: #bbb;
+      font-size: 18px;
+      transition: all 0.15s;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .add-time-btn:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+  }
+
+  .day-label {
+      background: #f7f5f2;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      padding: 6px 4px;
+      white-space: nowrap;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      text-align: center;
+      vertical-align: middle;
+      width: 28px;
+  }
+
+  .event-cell {
+      padding: 2px;
+      height: 130px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: background 0.1s;
+  }
+
+  .event-cell:hover {
+      background: #fafaf9;
+  }
+
+  .event-cell-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      overflow: hidden;
+      min-height: 0;
+  }
+
+  .empty-hint {
+      color: #ddd;
+      font-size: 18px;
+      line-height: 1;
+      transition: color 0.1s;
+      align-self: center;
+      width: 100%;
+      text-align: center;
+  }
+
+  .event-cell:hover .empty-hint {
+      color: #c0bab3;
+  }
+
+  .event-chip {
+      border-radius: 4px;
+      padding: 5px 7px;
+      width: 100%;
+      text-align: right;
+      cursor: pointer;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 1px;
+      transition: opacity 0.15s;
+  }
+
+  .event-chip:hover {
+      opacity: 0.85;
+  }
+
+  .event-breadcrumb {
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.4;
+      letter-spacing: -0.2px;
+      overflow: hidden;
+      word-break: break-word;
+      white-space: normal;
+  }
+
+  .event-title-text {
+      font-size: 12px;
+      font-weight: 800;
+      opacity: 0.85;
+      line-height: 1.35;
+      overflow: hidden;
+      word-break: break-word;
+      white-space: normal;
+  }
+
+  .event-notes-text {
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0.8;
+      line-height: 1.35;
+      overflow: hidden;
+      word-break: break-word;
+      white-space: normal;
+  }
+
+  /* iPad touch targets */
+  .btn {
+      padding: 10px 18px;
+      font-size: 13px;
+  }
+
+  .add-time-btn {
+      min-height: 44px;
+      font-size: 22px;
+  }
+
+  .tree-select-btn {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+  }
+
+  .tree-enter-btn {
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+  }
+
+  .tree-item-label {
+      padding: 8px 6px;
+      font-size: 13px;
+  }
+
+  .tree-item.back-item {
+      padding: 10px 8px;
+      font-size: 12px;
+  }
+
+  .grade-tab {
+      padding: 11px 12px;
+      font-size: 12px;
+  }
+
+  .color-swatch {
+      width: 34px;
+      height: 34px;
+  }
+
+  .form-input,
+  .form-textarea {
+      padding: 10px 12px;
+      font-size: 14px;
+  }
+
+  .modal-close {
+      width: 36px;
+      height: 36px;
+      font-size: 22px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+  }
+
+  .modal-overlay.active {
+      display: flex;
+  }
+
+  .modal {
+      background: var(--surface);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 640px;
+      box-shadow: var(--shadow-modal);
+      overflow: hidden;
+      animation: modalIn 0.18s ease;
+  }
+
+  @keyframes modalIn {
+      from {
+          transform: scale(0.95) translateY(8px);
+          opacity: 0;
+      }
+
+      to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+      }
+  }
+
+  .modal-header {
+      background: var(--accent);
+      color: white;
+      padding: 18px 22px;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  }
+
+  .modal-close {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      padding: 0;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .modal-close:hover {
+      color: white;
+  }
+
+  .modal-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-height: 78vh;
+      overflow-y: auto;
+  }
+
+  .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+  }
+
+  .form-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+  }
+
+  .form-input,
+  .form-textarea {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      background: var(--bg);
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+      border-color: var(--accent);
+      background: white;
+  }
+
+  .form-textarea {
+      resize: vertical;
+      min-height: 65px;
+  }
+
+  /* TREE - improved navigation */
+  .tree-nav {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      overflow: hidden;
+  }
+
+  .tree-breadcrumb {
+      padding: 8px 12px;
+      background: var(--accent-light);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 700;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+  }
+
+  .tree-list {
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 6px;
+  }
+
+  .tree-item-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 5px;
+      padding: 2px 4px;
+      transition: background 0.1s;
+      margin-bottom: 1px;
+  }
+
+  .tree-item-row:hover {
+      background: #f0ede8;
+  }
+
+  .tree-item-row.row-selected {
+      background: #e8f0fa;
+  }
+
+  /* دکمه انتخاب مبحث */
+  .tree-select-btn {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      transition: all 0.15s;
+      font-family: inherit;
+  }
+
+  .tree-select-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+  }
+
+  .tree-select-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+  }
+
+  /* نام مبحث */
+  .tree-item-label {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: right;
+      cursor: pointer;
+      padding: 8px 6px;
+      line-height: 1.4;
+  }
+
+  .tree-item-label:hover {
+      color: var(--accent);
+  }
+
+  .row-selected .tree-item-label {
+      font-weight: 700;
+      color: var(--accent);
+  }
+
+  /* دکمه ورود به زیرمجموعه */
+  .tree-enter-btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      border: 1.5px solid var(--border);
+      background: #f7f5f2;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      font-family: inherit;
+  }
+
+  .tree-enter-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+  }
+
+  /* بازگشت */
+  .tree-item.back-item {
+      color: var(--text-muted);
+      font-size: 11px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+      padding: 6px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+  }
+
+  .tree-item.back-item:hover {
+      background: var(--accent-light);
+  }
+
+  .grade-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #f7f5f2;
+  }
+
+  .grade-tab {
+      flex: 1;
+      padding: 8px 12px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.15s;
+  }
+
+  .grade-tab:hover {
+      background: var(--accent-light);
+      color: var(--accent);
+  }
+
+  .grade-tab.active {
+      background: var(--accent);
+      color: white;
+  }
+
+  /* COLOR */
+  .color-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      max-width: 320px;
+  }
+
+  .color-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.1s, border-color 0.1s;
+      flex-shrink: 0;
+  }
+
+  .color-swatch:hover {
+      transform: scale(1.2);
+  }
+
+  .color-swatch.selected {
+      border-color: #333;
+      transform: scale(1.15);
+      box-shadow: 0 0 0 1px #333;
+  }
+
+  .modal-footer {
+      padding: 16px 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+  }
+
+  .icon {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+  }
+
+  .icon-sm {
+      width: 14px;
+      height: 14px;
+  }
+
+  .loading-indicator {
+      padding: 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+  }
+
+  /* ── Drag & Drop ── */
+  .event-chip { cursor: grab; user-select: none; }
+  .event-chip:active { cursor: grabbing; }
+  .sortable-ghost { opacity: 0.35; background: var(--accent-light) !important; border: 1px dashed var(--accent) !important; }
+  .event-chip.sortable-drag { transform: rotate(1.5deg) scale(1.02); box-shadow: 0 10px 25px rgba(0,0,0,0.18); opacity: 0.95; cursor: grabbing; position: relative; }
+  body.is-dragging .event-cell { transition: background 0.15s; }
+  body.is-dragging .event-cell:hover { background: var(--accent-light); }
+  body.is-copying .event-chip.sortable-drag::after { content: "＋"; position: absolute; top: -6px; left: -6px; background: #16a34a; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+  /* ── منوی راست‌کلیک ایونت ── */
+  #event-context-menu {
+      position: fixed;
+      z-index: 1200;
+      direction: rtl;
+      min-width: 150px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-modal);
+      padding: 5px;
+      display: none;
+      overflow: hidden;
+  }
+
+  #event-context-menu.visible { display: block; }
+
+  .ctx-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-align: right;
+      padding: 8px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+  }
+
+  .ctx-item:hover,
+  .ctx-item:focus-visible {
+      background: var(--accent-light);
+      color: var(--accent);
+      outline: none;
+  }
+
+  .ctx-item.ctx-danger:hover,
+  .ctx-item.ctx-danger:focus-visible {
+      background: #fee2e2;
+      color: #dc2626;
+  }
+
+  .ctx-item .icon-sm { flex: 0 0 auto; }
+
+  /* ── دسته‌های resize ── */
+  .event-chip { position: relative; }
+
+  .resize-handle {
+      position: absolute;
+      z-index: 6;
+      touch-action: none;
+      opacity: 0.3;
+      transition: opacity 0.15s, background 0.15s;
+  }
+
+  .event-chip:hover .resize-handle { opacity: 1; }
+
+  /* لبهٔ انتهاییِ بازه (در RTL چپ، در LTR راست) ← گسترش در جهت ستون‌های زمان */
+  .resize-handle-x {
+      top: 0;
+      bottom: 0;
+      width: 9px;
+      inset-inline-end: 0;
+      cursor: col-resize;
+  }
+
+  .resize-handle-y {
+      left: 0;
+      right: 0;
+      height: 9px;
+      bottom: 0;
+      cursor: row-resize;
+  }
+
+  .resize-handle-xy {
+      width: 16px;
+      height: 16px;
+      bottom: 0;
+      inset-inline-end: 0;
+      cursor: nesw-resize;
+      border-radius: 4px 0 4px 0;
+      background: linear-gradient(135deg, transparent 45%, currentColor 45%, currentColor 55%, transparent 55%);
+      opacity: 0.45;
+  }
+
+  .resize-handle-x:hover,
+  .resize-handle-y:hover {
+      background: var(--accent);
+      opacity: 0.7;
+  }
+
+  body.is-resizing { cursor: grabbing; user-select: none; }
+  body.is-resizing .event-cell { transition: background 0.1s; }
+
+  /* پیش‌نمایش زندهٔ ناحیهٔ در حال resize */
+  .resize-ghost {
+      position: fixed;
+      z-index: 1100;
+      pointer-events: none;
+      box-sizing: border-box;
+      border: 2px dashed var(--accent);
+      background: var(--accent-light);
+      opacity: 0.6;
+      border-radius: 4px;
+  }
+
+  .resize-ghost.invalid {
+      border-color: #dc2626;
+      background: #fee2e2;
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+      @page {
+          size: A4 landscape;
+          margin: 3mm;
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      html,
+      body {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+      }
+
+      .toolbar,
+      .no-print,
+      .day-note-row,
+      .notes-card,
+      #event-context-menu,
+      .resize-ghost {
+          display: none !important;
+      }
+
+      body {
+          background: white;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          font-size: 7px;
+      }
+
+      .container {
+          padding: 0;
+          margin: 0;
+          max-width: 100%;
+          width: 100%;
+      }
+
+      /* ── meta ── */
+      .meta-card {
+          border: 1px solid #aaa;
+          box-shadow: none;
+          margin-bottom: 2px;
+      }
+
+      .meta-logo {
+          padding: 4px 8px !important;
+          min-width: 70px !important;
+      }
+
+      .meta-logo img {
+          height: 28px !important;
+      }
+
+      .meta-logo-title {
+          font-size: 7px !important;
+      }
+
+      .meta-logo-sub {
+          font-size: 5px !important;
+      }
+
+      .meta-info {
+          padding: 3px 8px !important;
+          gap: 2px !important;
+          flex: 0 0 180px !important;
+      }
+
+      .meta-info-top,
+      .meta-info-bottom {
+          gap: 6px !important;
+      }
+
+      .meta-info-bottom {
+          padding-top: 2px !important;
+      }
+
+      .meta-field {
+          gap: 0;
+      }
+
+      .meta-label {
+          font-size: 5px !important;
+      }
+
+      .meta-input {
+          font-size: 8px !important;
+          border-bottom: none !important;
+          padding: 0 !important;
+      }
+
+      .meta-select {
+          display: none !important;
+      }
+
+      .meta-grade-print {
+          display: block !important;
+          font-size: 8px !important;
+          font-weight: 700;
+          padding: 0;
+      }
+
+      .meta-notes-col {
+          padding: 3px 8px !important;
+      }
+
+      .meta-notes-input {
+          font-size: 6px !important;
+          border: none !important;
+          padding: 1px 0 !important;
+          background: transparent !important;
+          resize: none;
+      }
+
+      /* ── جدول ── */
+      .grid-card {
+          box-shadow: none;
+          border: 1px solid #aaa;
+          margin-top: 0;
+      }
+
+      .grid-scroll {
+          overflow: visible !important;
+      }
+
+      .add-time-th,
+      .add-time-btn,
+      .delete-time-btn {
+          display: none !important;
+      }
+
+      table {
+          width: 100% !important;
+          min-width: 0 !important;
+          table-layout: fixed;
+          border-collapse: collapse;
+          page-break-inside: avoid;
+          height: calc(100vh - 32mm) !important;
+      }
+
+      /* هر ردیف ارتفاع یکسان از کل ارتفاع جدول */
+      tbody tr {
+          height: calc((100vh - 42mm) / 7) !important;
+      }
+
+      th,
+      td {
+          border: 0.5px solid #bbb !important;
+      }
+
+      /* ستون روز — باریک چون عمودی نوشته میشه */
+      thead tr th:first-child {
+          width: 16px !important;
+      }
+
+      tbody td:first-child {
+          width: 16px !important;
+      }
+
+      /* ستون زمان */
+      .time-cell {
+          width: 28px !important;
+          min-width: 0 !important;
+          max-width: none !important;
+          padding: 0 !important;
+      }
+
+      .time-edit {
+          font-size: 8.5px !important;
+          padding: 0.5px !important;
+          line-height: 1.15 !important;
+          white-space: nowrap;
+          color: #333 !important;
+          display: block;
+      }
+
+      .time-edit-start {
+          border-bottom: 0.5px dashed #aaa !important;
+      }
+
+      .day-label {
+          font-size: 8px !important;
+          padding: 2px !important;
+          background: #f0f0f0 !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          vertical-align: middle !important;
+          white-space: nowrap !important;
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
+          transform: rotate(180deg);
+          text-align: center;
+          width: 18px !important;
+      }
+
+      /* خانه‌های ایونت — ارتفاع از CSS variable (تنظیم smart) */
+      tbody td {
+          height: inherit !important;
+          overflow: hidden !important;
+          padding: 1px !important;
+      }
+
+      .event-cell {
+          padding: 1px !important;
+          height: 100% !important;
+          overflow: hidden !important;
+      }
+
+      .event-cell-inner {
+          height: 100% !important;
+          min-height: 0 !important;
+          overflow: hidden !important;
+      }
+
+      .event-chip {
+          height: 100% !important;
+          min-height: 0 !important;
+          padding: 2px 3px !important;
+          gap: 1px !important;
+          overflow: hidden !important;
+          justify-content: flex-start !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+      }
+
+      .event-breadcrumb {
+          font-size: var(--print-font-bc, 12.5px) !important;
+          font-weight: 800 !important;
+          line-height: 1.3 !important;
+          overflow: hidden !important;
+          word-break: break-word !important;
+          white-space: normal !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+      }
+
+      .event-title-text {
+          font-size: var(--print-font-title, 9px) !important;
+          line-height: 1.2 !important;
+          overflow: hidden !important;
+          word-break: break-word !important;
+          white-space: normal !important;
+      }
+
+      .event-notes-text {
+          font-size: var(--print-font-title, 7px) !important;
+          line-height: 1.2 !important;
+          overflow: hidden !important;
+          word-break: break-word !important;
+          white-space: normal !important;
+      }
+
+      .empty-hint {
+          display: none !important;
+      }
+
+      /* watermark */
+      body::after {
+          content: "Famo Konkur Academy";
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(-35deg);
+          font-size: 40px;
+          font-weight: 900;
+          color: rgba(26, 39, 68, 0.04);
+          white-space: nowrap;
+          pointer-events: none;
+          z-index: 9999;
+          font-family: Arial, sans-serif;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+      }
+  }
+
+
+  /* ── Multi-select ── */
+  .event-cell.cell-selected {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+      background: var(--accent-light) !important;
+  }
+
+  .event-cell.cell-selecting {
+      cursor: crosshair;
+  }
+
+  #multi-action-bar {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a2744;
+      color: white;
+      border-radius: 40px;
+      padding: 10px 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+      z-index: 500;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+  }
+
+  #multi-action-bar.visible {
+      display: flex;
+  }
+
+  #multi-action-bar button {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      border-radius: 20px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.15s;
+  }
+
+  #multi-action-bar button:hover {
+      background: rgba(255, 255, 255, 0.3);
+  }
+
+  #multi-action-bar .bar-cancel {
+      background: transparent;
+      opacity: 0.6;
+  }
+
+  /* ── یادداشت روز ── */
+  .day-note-row td {
+      border-top: none !important;
+      padding: 0 !important;
+      height: auto !important;
+  }
+
+  /* خانه‌های خالی ردیف یادداشت — بدون border */
+  .day-note-cell {
+      border: none !important;
+      background: transparent;
+      padding: 0 !important;
+  }
+
+  /* فقط خانه اول (زیر نام روز) border-top دارد */
+  .day-note-cell:first-child {
+      background: #fafaf8 !important;
+      border-left: 1px solid var(--border) !important;
+      border-right: 1px solid var(--border) !important;
+      border-bottom: 1px solid var(--border) !important;
+  }
+
+  .day-note-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 3px 5px 5px;
+      border-top: 1px dashed var(--border);
+  }
+
+  .day-note-label {
+      font-size: 9px;
+      color: #bbb;
+      padding-top: 5px;
+      flex-shrink: 0;
+  }
+
+  .day-note-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 11px;
+      color: var(--text-muted);
+      resize: none;
+      outline: none;
+      min-height: 22px;
+      max-height: 60px;
+      line-height: 1.5;
+      overflow: hidden;
+      width: 100%;
+  }
+
+  .day-note-input:focus {
+      color: var(--text);
+  }
+
+  .day-note-input::placeholder {
+      color: #ccc;
+  }
+
+  .day-note-row {
+      display: table-row;
+  }
+
+  /* ── پنل بارگذاری برنامه شاگرد ── */
+  #load-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 900;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+  }
+
+  #load-panel.active {
+      display: flex;
+  }
+
+  #load-panel-inner {
+      background: white;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      animation: modalIn 0.18s ease;
+  }
+
+  #load-panel-header {
+      background: #1a2744;
+      color: white;
+      padding: 16px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  }
+
+  #load-panel-header button {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      font-size: 20px;
+      font-family: inherit;
+  }
+
+  #load-panel-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 70vh;
+      overflow-y: auto;
+  }
+
+  .lp-search {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+  }
+
+  .lp-search:focus {
+      border-color: var(--accent);
+  }
+
+  .lp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+  }
+
+  .lp-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+  }
+
+  .lp-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+  }
+
+  .lp-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+  }
+
+  .lp-item-name {
+      font-size: 14px;
+      font-weight: 700;
+  }
+
+  .lp-item-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+  }
+
+  .lp-item-plans {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-end;
+  }
+
+  .lp-plan-btn {
+      font-size: 11px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text);
+      transition: all 0.12s;
+      white-space: nowrap;
+  }
+
+  .lp-plan-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+  }
+
+  .lp-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      padding: 20px;
+  }
+
+  /* ── Multi-topic در مودال ── */
+  .selected-topics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 120px;
+      overflow-y: auto;
+  }
+
+  .topic-tag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--accent-light);
+      border: 1px solid #93c5fd;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+  }
+
+  .topic-tag button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0 0 0 4px;
+      font-family: inherit;
+  }
+
+  .topic-tag button:hover {
+      color: #dc2626;
+  }
+
+  .topics-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-style: italic;
+  }
+
+  .tree-list::-webkit-scrollbar {
+      width: 4px;
+  }
+
+  .tree-list::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 2px;
+  }
+
+  .modal-body::-webkit-scrollbar {
+      width: 4px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 2px;
+  }
+
+  /* یادداشت هفتگی */
+  .notes-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-top: 12px;
+      box-shadow: var(--shadow);
+  }
+
+  .notes-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+  }
+
+  .notes-textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.8;
+      transition: border-color 0.15s;
+  }
+
+  .notes-textarea:focus {
+      border-color: var(--accent);
+      background: white;
+  }
+
+  /* یادداشت داخل مودال */
+  .form-textarea {
+      font-size: 14px !important;
+      line-height: 1.7;
+  }
+
+  @media print {
+      body::after {
+          content: "Famo Konkur Academy";
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(-35deg);
+          font-size: 56px;
+          font-weight: 900;
+          color: rgba(26, 39, 68, 0.055);
+          white-space: nowrap;
+          pointer-events: none;
+          z-index: 9999;
+          letter-spacing: 3px;
+          font-family: Arial, sans-serif;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+      }
+  }
