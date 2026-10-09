@@ -10,7 +10,7 @@ async function openLoadPanel() {
   document.getElementById('lp-list').innerHTML = '<div class="lp-empty">در حال بارگذاری...</div>';
   try {
     const [sRes, pRes] = await Promise.all([
-      fetch(`${API_BASE}/students.php`),
+      fetch(`${API_BASE}/students`),
       fetch(`${API_BASE}/reports.php?type=all_students`)
     ]);
     const sData = await sRes.json();

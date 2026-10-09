@@ -1,11 +1,7 @@
-/* ========================================================
-   config.js — ثابت‌های پروژه و توابع کمکی خالص
-   (بدون وابستگی به state یا DOM)
-   ======================================================== */
-
+const API_BASE = 'https://api.famoacademy.ir/api/v1';
 const DAYS = ['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'];
 
-const MIDDLE_SCHOOL_MAP = { "7th": 2, "8th": 3, "9th": 4 };
+const MIDDLE_SCHOOL_MAP = { "7th":  2, "8th": 3, "9th": 4 };
 
 const CURRICULUM_MAP = {
   math:       { "10th": 1602, "11th": 1603, "12th": 13775 },
@@ -19,7 +15,6 @@ const GRADE_LABELS = {
 };
 const MAJOR_LABELS_FA = { 'math':'ریاضی','tajrobi':'تجربی','humanities':'انسانی' };
 
-const API_BASE = 'api';
 
 const COLORS = [
   { id:'sky',     bg:'#e0f2fe',text:'#0c4a6e',border:'#7dd3fc', label:'آبی خیلی روشن' },
