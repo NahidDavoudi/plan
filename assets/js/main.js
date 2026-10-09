@@ -92,7 +92,10 @@ async function init() {
       clearSelectedCells();
     }
     if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('active')) {
-      if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+      const t = e.target;
+      const tag = t.tagName;
+      const inTree = t.closest && t.closest('#tree-list');
+      if (tag !== 'TEXTAREA' && tag !== 'SELECT' && tag !== 'BUTTON' && !inTree) {
         saveEvent();
       }
     }

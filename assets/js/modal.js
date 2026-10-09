@@ -2,6 +2,122 @@
    modal.js — مودال افزودن/ویرایش/حذف ایونت + انتخاب رنگ
    ======================================================== */
 
+// ── انتخاب نوع فعالیت (picker بصری روی select مخفی) ──
+const ACTIVITY_CATEGORY_ICONS = {
+  'همه': 'layout-grid',
+  'تکالیف': 'book-open',
+  'تمرین و تست': 'target',
+  'آزمون': 'clipboard-check',
+  'مطالعه': 'brain',
+  'سایر': 'coffee'
+};
+let activeActivityCat = 'همه';
+
+function _actIcon(name, cls) {
+  const i = document.createElement('i');
+  i.setAttribute('data-lucide', name);
+  if (cls) i.className = cls;
+  i.setAttribute('aria-hidden', 'true');
+  return i;
+}
+
+function getActivityGroups() {
+  const sel = document.getElementById('event-title-preset');
+  if (!sel) return [];
+  return Array.from(sel.querySelectorAll('optgroup')).map(g => ({
+    label: g.label,
+    items: Array.from(g.querySelectorAll('option')).map(o => ({
+      value: o.value,
+      label: o.textContent,
+      custom: o.value === '__custom__'
+    }))
+  }));
+}
+
+function renderActivityPicker() {
+  const catsEl = document.getElementById('activity-cats');
+  const gridEl = document.getElementById('activity-grid');
+  const sel = document.getElementById('event-title-preset');
+  if (!catsEl || !gridEl || !sel) return;
+
+  const groups = getActivityGroups();
+  const current = sel.value;
+
+  catsEl.innerHTML = '';
+  const catNames = ['همه', ...groups.map(g => g.label)];
+  catNames.forEach(name => {
+    const active = name === activeActivityCat;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'activity-cat' + (active ? ' active' : '');
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    btn.appendChild(_actIcon(ACTIVITY_CATEGORY_ICONS[name] || 'circle', 'icon-sm'));
+    const span = document.createElement('span');
+    span.textContent = name;
+    btn.appendChild(span);
+    btn.addEventListener('click', () => {
+      activeActivityCat = name;
+      renderActivityPicker();
+    });
+    catsEl.appendChild(btn);
+  });
+
+  gridEl.innerHTML = '';
+  const visibleGroups = activeActivityCat === 'همه'
+    ? groups
+    : groups.filter(g => g.label === activeActivityCat);
+
+  visibleGroups.forEach(group => {
+    group.items.forEach(item => {
+      const active = item.value === current;
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'activity-chip' + (active ? ' active' : '') + (item.custom ? ' activity-chip-custom' : '');
+      chip.setAttribute('aria-pressed', active ? 'true' : 'false');
+      if (item.custom) chip.appendChild(_actIcon('pencil-line', 'icon-sm'));
+      const span = document.createElement('span');
+      span.textContent = item.label;
+      chip.appendChild(span);
+      chip.addEventListener('click', () => selectActivityItem(item.value));
+      gridEl.appendChild(chip);
+    });
+  });
+
+  if (!gridEl.children.length) {
+    const empty = document.createElement('div');
+    empty.className = 'activity-empty';
+    empty.textContent = 'موردی برای نمایش نیست';
+    gridEl.appendChild(empty);
+  }
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function selectActivityItem(value) {
+  const sel = document.getElementById('event-title-preset');
+  if (!sel) return;
+  sel.value = value;
+  onPresetChange();
+  clearActivityError();
+  renderActivityPicker();
+}
+
+function clearActivityError() {
+  const err = document.getElementById('event-title-error');
+  if (err) { err.hidden = true; err.textContent = ''; }
+}
+
+function showActivityError(msg) {
+  const err = document.getElementById('event-title-error');
+  if (!err) return;
+  err.textContent = msg;
+  err.hidden = false;
+}
+
+document.addEventListener('input', e => {
+  if (e.target && e.target.id === 'event-title') clearActivityError();
+});
+
 function openModal(di, ti, eventId) {
   currentCell = { dayIndex: di, timeIndex: ti };
   editingEventId = eventId;
@@ -21,6 +137,8 @@ function _openModalInternal(di, ti, eventId) {
   document.getElementById('event-title').style.display = 'none';
   document.getElementById('event-title-preset').value = '';
   document.getElementById('event-notes').value = '';
+  clearActivityError();
+  activeActivityCat = 'همه';
   document.getElementById('sel-topic-id').value = '';
   document.getElementById('sel-topic-path').value = '';
   document.getElementById('sel-topic-label').value = '';
@@ -67,10 +185,14 @@ function _openModalInternal(di, ti, eventId) {
   }
 
   renderColorPicker();
+  renderActivityPicker();
   renderGradeTabs();
   initTree();
   document.getElementById('modal-overlay').classList.add('active');
-  setTimeout(() => document.getElementById('event-title-preset').focus(), 100);
+  setTimeout(() => {
+    const modal = document.querySelector('.modal');
+    if (modal) modal.focus();
+  }, 100);
 }
 
 function closeModal() {
@@ -86,10 +208,15 @@ function renderColorPicker() {
   const row = document.getElementById('color-row');
   row.innerHTML = '';
   COLORS.forEach(c => {
-    const sw = document.createElement('div');
-    sw.className = 'color-swatch' + (c.id === selectedColor ? ' selected' : '');
+    const active = c.id === selectedColor;
+    const sw = document.createElement('button');
+    sw.type = 'button';
+    sw.className = 'color-swatch' + (active ? ' selected' : '');
     sw.style.cssText = `background:${c.bg};border-color:${c.border};`;
     sw.title = c.label;
+    sw.setAttribute('role', 'radio');
+    sw.setAttribute('aria-checked', active ? 'true' : 'false');
+    sw.setAttribute('aria-label', c.label);
     sw.addEventListener('click', () => { selectedColor = c.id; renderColorPicker(); });
     row.appendChild(sw);
   });
@@ -116,6 +243,7 @@ function getSubjectNameFromPath() {
 
 function saveEvent() {
   if (!currentCell) return;
+  clearActivityError();
   const presetEl = document.getElementById('event-title-preset');
   const customEl = document.getElementById('event-title');
   const title = presetEl.value === '__custom__'
@@ -129,10 +257,10 @@ function saveEvent() {
   const firstTopic = topicsToSave[0] || null;
 
   if (!title && topicsToSave.length === 0) {
-    const inp = document.getElementById('event-title-preset');
-    inp.style.borderColor = '#dc2626';
-    inp.focus();
-    setTimeout(() => inp.style.borderColor = '', 1500);
+    showActivityError('یک مبحث یا نوع فعالیت انتخاب کنید.');
+    const activeChip = document.querySelector('#activity-grid .activity-chip.active');
+    const focusTarget = activeChip || document.querySelector('#activity-grid .activity-chip');
+    if (focusTarget && focusTarget.focus) focusTarget.focus();
     return;
   }
 

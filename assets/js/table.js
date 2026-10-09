@@ -90,7 +90,8 @@ function renderHeader() {
     const del = document.createElement('button');
     del.className = 'delete-time-btn no-print';
     del.title = 'حذف';
-    del.innerHTML = '×';
+    del.setAttribute('aria-label', 'حذف ستون زمان');
+    del.innerHTML = '<i data-lucide="x" class="icon-sm" aria-hidden="true"></i>';
     del.addEventListener('click', e => { e.stopPropagation(); deleteTimeColumn(i); });
 
     th.appendChild(startInp);

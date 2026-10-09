@@ -62,7 +62,7 @@ function renderLoadList(students) {
 
     const newBtn = document.createElement('button');
     newBtn.className = 'lp-plan-btn';
-    newBtn.textContent = '🗓 برنامه جدید';
+    newBtn.innerHTML = '<i data-lucide="calendar-plus" class="icon-sm" aria-hidden="true"></i><span>برنامه جدید</span>';
     newBtn.addEventListener('click', async () => {
       await loadStudentTimesOnly(s);
       closeLoadPanel();
@@ -72,7 +72,14 @@ function renderLoadList(students) {
     if (s.plan_count > 0) {
       const lastBtn = document.createElement('button');
       lastBtn.className = 'lp-plan-btn';
-      lastBtn.textContent = `📋 آخرین برنامه (${s.last_week_date || '—'})`;
+      const lastIcon = document.createElement('i');
+      lastIcon.setAttribute('data-lucide', 'history');
+      lastIcon.className = 'icon-sm';
+      lastIcon.setAttribute('aria-hidden', 'true');
+      const lastText = document.createElement('span');
+      lastText.textContent = `آخرین برنامه (${s.last_week_date || '—'})`;
+      lastBtn.appendChild(lastIcon);
+      lastBtn.appendChild(lastText);
       lastBtn.addEventListener('click', async () => {
         await loadLastPlan(s.id);
         closeLoadPanel();
@@ -84,6 +91,7 @@ function renderLoadList(students) {
     item.appendChild(plansDiv);
     list.appendChild(item);
   });
+  lucide.createIcons();
 }
 
 async function loadStudentTimesOnly(student) {
@@ -115,7 +123,7 @@ async function loadStudentTimesOnly(student) {
     loadMetaFields();
     renderHeader();
     renderBody();
-    setStatus(`✓ ${student.name} بارگذاری شد`, '#16a34a');
+    setStatus(`${student.name} بارگذاری شد`, '#16a34a');
   } catch(e) {
     alert('خطا در بارگذاری اطلاعات دانش‌آموز');
   }
@@ -178,7 +186,7 @@ async function loadLastPlan(studentId) {
     renderBody();
     const notes = document.getElementById('weekly-notes');
     if (notes) notes.value = state.weeklyNotes;
-    setStatus(`✓ برنامه ${plan.week_date || ''} بارگذاری شد`, '#16a34a');
+    setStatus(`برنامه ${plan.week_date || ''} بارگذاری شد`, '#16a34a');
   } catch(e) {
     console.error(e);
     alert('خطا در بارگذاری برنامه');
@@ -210,14 +218,14 @@ async function savePlanToServer() {
     });
     const data = await res.json();
     if (data.success) {
-      setStatus(`✓ ${data.saved} — شناسه: #${data.plan_id}`, '#16a34a');
+      setStatus(`${data.saved} — شناسه: #${data.plan_id}`, '#16a34a');
       state.lastPlanId = data.plan_id;
       localStorage.setItem('planner_v2', JSON.stringify(state));
     } else {
-      setStatus('✗ ' + (data.error || 'خطا'), '#dc2626');
+      setStatus((data.error || 'خطا'), '#dc2626');
     }
   } catch(e) {
-    setStatus('✗ خطا در اتصال به سرور', '#dc2626');
+    setStatus('خطا در اتصال به سرور', '#dc2626');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i data-lucide="cloud-upload" class="icon-sm"></i> ذخیره در سرور';
