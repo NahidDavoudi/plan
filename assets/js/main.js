@@ -104,4 +104,4 @@ async function init() {
   lucide.createIcons();
 }
 
-init();
+window.__famoStart = init;

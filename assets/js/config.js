@@ -1,4 +1,3 @@
-const API_BASE = 'https://api.famoacademy.ir/api/v1';
 const DAYS = ['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'];
 
 const MIDDLE_SCHOOL_MAP = { "7th":  2, "8th": 3, "9th": 4 };
@@ -114,4 +113,35 @@ function truncatePath(pathShort, maxWords = 4) {
 }
 function displayPrefix(parts) {
   return parts.join(' | ');
+}
+
+// ── SERVER VOCABULARY ADAPTERS ──
+
+function gradeToString(value) {
+  if (value === null || value === undefined || value === '') return '';
+  if (typeof value === 'string' && /th$/.test(value)) return value;
+  const n = Number(value);
+  return Number.isFinite(n) ? n + 'th' : String(value);
+}
+
+function gradeToNumber(value) {
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'number') return value;
+  const m = String(value).match(/\d+/);
+  return m ? Number(m[0]) : null;
+}
+
+const FIELD_TO_MAJOR = { 'ریاضی': 'math', 'تجربی': 'tajrobi', 'انسانی': 'humanities', 'راهنمایی': '' };
+const MAJOR_TO_FIELD = { 'math': 'ریاضی', 'tajrobi': 'تجربی', 'humanities': 'انسانی', '': 'راهنمایی' };
+
+function fieldToMajor(field) {
+  if (!field) return '';
+  if (FIELD_TO_MAJOR[field] !== undefined) return FIELD_TO_MAJOR[field];
+  if (MAJOR_LABELS_FA[field] !== undefined) return field;
+  return '';
+}
+
+function majorToField(major) {
+  if (!major) return 'راهنمایی';
+  return MAJOR_TO_FIELD[major] || major;
 }

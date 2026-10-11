@@ -9,16 +9,20 @@ async function openLoadPanel() {
   document.getElementById('lp-search').value = '';
   document.getElementById('lp-list').innerHTML = '<div class="lp-empty">در حال بارگذاری...</div>';
   try {
-    const [sRes, pRes] = await Promise.all([
-      fetch(`${API_BASE}/students`),
-      fetch(`${API_BASE}/reports.php?type=all_students`)
-    ]);
-    const sData = await sRes.json();
-    const pData = await pRes.json();
-    allStudentsData = sData.students || [];
-    allPlansData    = pData.students || [];
+    const API = await window.FamoAPI;
+    const res = await API.get('/students/overview');
+    const rows = (res.data && res.data.students) || [];
+    allStudentsData = rows.map(s => ({
+      id: s.id,
+      name: s.name,
+      grade: gradeToString(s.grade),
+      major: fieldToMajor(s.field),
+      plan_count: s.plan_count || 0,
+      last_week_date: s.last_week_date || ''
+    }));
+    allPlansData = allStudentsData;
     renderLoadList(allStudentsData);
-  } catch(e) {
+  } catch (e) {
     document.getElementById('lp-list').innerHTML = '<div class="lp-empty">خطا در اتصال به سرور</div>';
   }
 }
@@ -96,27 +100,30 @@ function renderLoadList(students) {
 
 async function loadStudentTimesOnly(student) {
   try {
-    const res = await fetch(`${API_BASE}/plans.php?student_id=${student.id}`);
-    const data = await res.json();
-    const plans = data.plans || [];
+    const API = await window.FamoAPI;
+    const res = await API.get(`/plans?student_id=${encodeURIComponent(student.id)}`);
+    const plans = (res.data && res.data.plans) || [];
 
     state.meta.name  = student.name;
     state.meta.grade = student.grade;
     state.meta.major = student.major || '';
     state.meta.date  = '';
+    state.studentId  = student.id;
+    state.lastPlanId = null;
     state.events = [];
     state.dayNotes = {};
 
     if (plans.length > 0) {
       const lastPlan = plans[0];
-      const planRes = await fetch(`${API_BASE}/plans.php?id=${lastPlan.id}`);
-      const planData = await planRes.json();
-      if (planData.plan && planData.plan.times_json) {
+      const planRes = await API.get(`/plans/${encodeURIComponent(lastPlan.id)}`);
+      const plan = planRes.data && planRes.data.plan;
+      if (plan && plan.times_json) {
         try {
-          const times = JSON.parse(planData.plan.times_json);
+          const times = typeof plan.times_json === 'string' ? JSON.parse(plan.times_json) : plan.times_json;
           if (times && times.length) state.times = normalizeTimes(times);
-        } catch(e) {}
+        } catch (e) {}
       }
+      state.lastPlanId = lastPlan.id;
     }
 
     saveState();
@@ -124,38 +131,38 @@ async function loadStudentTimesOnly(student) {
     renderHeader();
     renderBody();
     setStatus(`${student.name} بارگذاری شد`, '#16a34a');
-  } catch(e) {
+  } catch (e) {
     alert('خطا در بارگذاری اطلاعات دانش‌آموز');
   }
 }
 
 async function loadLastPlan(studentId) {
   try {
-    const res = await fetch(`${API_BASE}/plans.php?student_id=${studentId}`);
-    const data = await res.json();
-    const plans = data.plans || [];
+    const API = await window.FamoAPI;
+    const res = await API.get(`/plans?student_id=${encodeURIComponent(studentId)}`);
+    const plans = (res.data && res.data.plans) || [];
     if (!plans.length) { alert('برنامه‌ای یافت نشد'); return; }
 
-    const planRes = await fetch(`${API_BASE}/plans.php?id=${plans[0].id}`);
-    const planData = await planRes.json();
-    if (!planData.success) { alert('خطا در بارگذاری برنامه'); return; }
+    const planRes = await API.get(`/plans/${encodeURIComponent(plans[0].id)}`);
+    const payload = planRes.data || {};
+    const plan = payload.plan || {};
+    const events = payload.events || [];
+    const serverStudent = payload.student || {};
+    const student = allStudentsData.find(s => String(s.id) === String(studentId)) || {};
 
-    const plan = planData.plan;
-    const events = planData.events || [];
-
-    const student = allStudentsData.find(s => s.id === studentId) || {};
-
-    state.meta.name  = student.name  || plan.student_name || '';
-    state.meta.grade = student.grade || plan.grade || '';
-    state.meta.major = student.major || plan.major || '';
+    state.meta.name  = student.name  || serverStudent.name || '';
+    state.meta.grade = student.grade || gradeToString(serverStudent.grade) || '';
+    state.meta.major = student.major || fieldToMajor(serverStudent.field) || '';
     state.meta.date  = plan.week_date || '';
     state.weeklyNotes = plan.weekly_notes || '';
+    state.studentId  = studentId;
+    state.lastPlanId = plans[0].id;
 
     if (plan.times_json) {
       try {
-        const t = JSON.parse(plan.times_json);
-        if (t?.length) state.times = normalizeTimes(t);
-      } catch(e) {}
+        const t = typeof plan.times_json === 'string' ? JSON.parse(plan.times_json) : plan.times_json;
+        if (t && t.length) state.times = normalizeTimes(t);
+      } catch (e) {}
     }
 
     state.events = events.map(ev => ({
@@ -173,9 +180,11 @@ async function loadLastPlan(studentId) {
       topicPathShort: ev.topic_path_short || '',
       subjectName:    ev.subject_name || '',
       selectedGrade:  ev.selected_grade || '',
-      topics: ev.topic_path_short
-        ? [{ id: ev.topic_id, label: ev.topic_label, pathShort: ev.topic_path_short, path: ev.topic_path }]
-        : []
+      topics: Array.isArray(ev.topics) && ev.topics.length
+        ? ev.topics
+        : (ev.topic_path_short
+            ? [{ id: ev.topic_id, label: ev.topic_label, pathShort: ev.topic_path_short, path: ev.topic_path }]
+            : [])
     }));
 
     state.dayNotes = {};
@@ -187,7 +196,7 @@ async function loadLastPlan(studentId) {
     const notes = document.getElementById('weekly-notes');
     if (notes) notes.value = state.weeklyNotes;
     setStatus(`برنامه ${plan.week_date || ''} بارگذاری شد`, '#16a34a');
-  } catch(e) {
+  } catch (e) {
     console.error(e);
     alert('خطا در بارگذاری برنامه');
   }
@@ -200,7 +209,7 @@ async function savePlanToServer() {
   const notes = document.getElementById('weekly-notes');
   if (notes) state.weeklyNotes = notes.value;
 
-  if (!state.meta.name?.trim()) { alert('لطفاً نام دانش‌آموز را وارد کنید'); document.getElementById('meta-name').focus(); return; }
+  if (!state.meta.name || !state.meta.name.trim()) { alert('لطفاً نام دانش‌آموز را وارد کنید'); document.getElementById('meta-name').focus(); return; }
   if (!state.meta.grade) { alert('لطفاً پایه را انتخاب کنید'); return; }
   if (!state.events.length) { alert('هیچ برنامه‌ای برای ذخیره وجود ندارد'); return; }
 
@@ -211,21 +220,28 @@ async function savePlanToServer() {
   setStatus('', '');
 
   try {
-    const res = await fetch(`${API_BASE}/plans.php`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
-    });
-    const data = await res.json();
-    if (data.success) {
-      setStatus(`${data.saved} — شناسه: #${data.plan_id}`, '#16a34a');
-      state.lastPlanId = data.plan_id;
-      localStorage.setItem('planner_v2', JSON.stringify(state));
-    } else {
-      setStatus((data.error || 'خطا'), '#dc2626');
-    }
-  } catch(e) {
-    setStatus('خطا در اتصال به سرور', '#dc2626');
+    const API = await window.FamoAPI;
+    const payload = {
+      plan_id: state.lastPlanId || undefined,
+      student_id: state.studentId || undefined,
+      week_date: state.meta.date || '',
+      weekly_notes: state.weeklyNotes || '',
+      times: state.times,
+      events: state.events,
+      meta: {
+        name: state.meta.name,
+        grade: gradeToNumber(state.meta.grade),
+        field: majorToField(state.meta.major)
+      }
+    };
+    const res = await API.post('/plans', payload);
+    const data = res.data || {};
+    setStatus(`${data.saved || 'ذخیره شد'} — شناسه: #${data.plan_id}`, '#16a34a');
+    state.lastPlanId = data.plan_id;
+    if (data.student_id) state.studentId = data.student_id;
+    localStorage.setItem('planner_v2', JSON.stringify(state));
+  } catch (e) {
+    setStatus(e && e.message ? e.message : 'خطا در اتصال به سرور', '#dc2626');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i data-lucide="cloud-upload" class="icon-sm"></i> ذخیره در سرور';

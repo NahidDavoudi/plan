@@ -1,11 +1,13 @@
+<?php require_once __DIR__ . '/config.php'; ?>
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php echo famo_config_script(); ?>
 <title>پلنر هفتگی مشاور</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="<?php echo famo_asset('js/libs/lucide.min.js', 'assets/js/libs/lucide.min.js'); ?>"></script>
 <link href="assets/style.css" rel="stylesheet">
 </head>
 <body>
@@ -213,6 +215,7 @@
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="assets/js/bootstrap.js"></script>
 <script src="assets/js/config.js"></script>
 <script src="assets/js/state.js"></script>
 <script src="assets/js/topicTree.js"></script>
@@ -223,5 +226,6 @@
 <script src="assets/js/modal.js"></script>
 <script src="assets/js/api.js"></script>
 <script src="assets/js/print.js"></script>
-<script src="assets/js/main.js"></script></body>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/auth.js"></script></body>
 </html>
