@@ -81,7 +81,7 @@ function renderLoadList(students) {
       lastIcon.className = 'icon-sm';
       lastIcon.setAttribute('aria-hidden', 'true');
       const lastText = document.createElement('span');
-      lastText.textContent = `آخرین برنامه (${s.last_week_date || '—'})`;
+      lastText.textContent = `آخرین برنامه (${formatPersianDate(s.last_week_date) || '—'})`;
       lastBtn.appendChild(lastIcon);
       lastBtn.appendChild(lastText);
       lastBtn.addEventListener('click', async () => {
@@ -195,7 +195,7 @@ async function loadLastPlan(studentId) {
     renderBody();
     const notes = document.getElementById('weekly-notes');
     if (notes) notes.value = state.weeklyNotes;
-    setStatus(`برنامه ${plan.week_date || ''} بارگذاری شد`, '#16a34a');
+    setStatus(`برنامه ${formatPersianDate(plan.week_date) || ''} بارگذاری شد`, '#16a34a');
   } catch (e) {
     console.error(e);
     alert('خطا در بارگذاری برنامه');
@@ -211,6 +211,7 @@ async function savePlanToServer() {
 
   if (!state.meta.name || !state.meta.name.trim()) { alert('لطفاً نام دانش‌آموز را وارد کنید'); document.getElementById('meta-name').focus(); return; }
   if (!state.meta.grade) { alert('لطفاً پایه را انتخاب کنید'); return; }
+  if (!state.meta.date) { showDateError(); document.getElementById('meta-date').focus(); return; }
   if (!state.events.length) { alert('هیچ برنامه‌ای برای ذخیره وجود ندارد'); return; }
 
   const btn = document.getElementById('btn-save-server');

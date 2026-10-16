@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="<?php echo famo_asset('js/libs/lucide.min.js', 'assets/js/libs/lucide.min.js'); ?>"></script>
 <link href="assets/style.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/jalalidatepicker@0.6.0/dist/jalalidatepicker.min.css" rel="stylesheet">
 </head>
 <body>
   <div class="print-watermark">
@@ -52,7 +53,8 @@
         </div>
         <div class="meta-field meta-field-date">
           <span class="meta-label">تاریخ</span>
-          <input class="meta-input" id="meta-date" type="text" placeholder="۱۴۰۴/..." oninput="saveState()">
+          <input class="meta-input" id="meta-date" data-jdp placeholder="۱۴۰۴/۰۷/۲۴">
+          <p class="form-error" id="meta-date-error" role="alert" hidden>لطفاً تاریخ معتبری انتخاب کنید</p>
         </div>
       </div>
       <div class="meta-info-bottom">
@@ -215,6 +217,7 @@
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jalalidatepicker@0.6.0/dist/jalalidatepicker.min.js"></script>
 <script src="assets/js/bootstrap.js"></script>
 <script src="assets/js/config.js"></script>
 <script src="assets/js/state.js"></script>
