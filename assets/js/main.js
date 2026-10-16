@@ -17,13 +17,15 @@ function loadMetaFields() {
   const elName = document.getElementById('meta-name');
   const elDate = document.getElementById('meta-date');
   const elAdvisor = document.getElementById('meta-advisor');
-  if (elName && state.meta.name) elName.value = state.meta.name;
-  if (elAdvisor && state.meta.advisor) elAdvisor.value = state.meta.advisor;
+  if (elName) elName.value = state.meta.name || '';
+  if (elAdvisor) elAdvisor.value = state.meta.advisor || '';
   if (elDate) {
     elDate.value = state.meta.date ? isoToJalaliString(state.meta.date) : '';
   }
-  if (state.meta.major) document.getElementById('meta-major').value = state.meta.major;
-  if (state.meta.grade) document.getElementById('meta-grade').value = state.meta.grade;
+  const elMajor = document.getElementById('meta-major');
+  const elGrade = document.getElementById('meta-grade');
+  if (elMajor) elMajor.value = state.meta.major || '';
+  if (elGrade) elGrade.value = state.meta.grade || '';
   updateCurriculumRoot();
   updatePrintSpans();
 }

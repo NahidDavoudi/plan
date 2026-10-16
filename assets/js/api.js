@@ -104,19 +104,30 @@ async function loadStudentTimesOnly(student) {
     const res = await API.get(`/plans?student_id=${encodeURIComponent(student.id)}`);
     const plans = (res.data && res.data.plans) || [];
 
-    state.meta.name  = student.name;
-    state.meta.grade = student.grade || '';
-    state.meta.major = student.major || '';
+    // مقدار پیش‌فرض از لیست دانش‌آموزان
+    let name  = student.name  || '';
+    let grade = student.grade || '';
+    let major = student.major || '';
+
     state.meta.date  = '';
     state.studentId  = student.id;
     state.lastPlanId = null;
     state.events = [];
     state.dayNotes = {};
+    state.weeklyNotes = '';
 
     if (plans.length > 0) {
       const lastPlan = plans[0];
       const planRes = await API.get(`/plans/${encodeURIComponent(lastPlan.id)}`);
-      const plan = planRes.data && planRes.data.plan;
+      const payload = planRes.data || {};
+      const plan = payload.plan;
+      const serverStudent = payload.student || {};
+
+      // اطلاعات دانش‌آموز را از بک‌اند بگیر (اولویت با سرور)
+      name  = serverStudent.name || plan?.student_name || name;
+      grade = gradeToString(serverStudent.grade ?? plan?.student_grade) || grade;
+      major = fieldToMajor(serverStudent.field ?? plan?.student_field) || major;
+
       if (plan && plan.times_json) {
         try {
           const times = typeof plan.times_json === 'string' ? JSON.parse(plan.times_json) : plan.times_json;
@@ -132,12 +143,19 @@ async function loadStudentTimesOnly(student) {
       state.lastPlanId = lastPlan.id;
     }
 
+    state.meta.name  = name;
+    state.meta.grade = grade;
+    state.meta.major = major;
+
     loadMetaFields();
+    const notes = document.getElementById('weekly-notes');
+    if (notes) notes.value = '';
     saveState();
     renderHeader();
     renderBody();
-    setStatus(`${student.name} بارگذاری شد`, '#16a34a');
+    setStatus(`${name} بارگذاری شد`, '#16a34a');
   } catch (e) {
+    console.error(e);
     alert('خطا در بارگذاری اطلاعات دانش‌آموز');
   }
 }
