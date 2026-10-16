@@ -104,9 +104,9 @@ async function loadStudentTimesOnly(student) {
     const res = await API.get(`/plans?student_id=${encodeURIComponent(student.id)}`);
     const plans = (res.data && res.data.plans) || [];
 
-    state.meta.name  = student.name || '';
-    state.meta.grade = gradeToString(student.grade) || '';
-    state.meta.major = fieldToMajor(student.major) || '';
+    state.meta.name  = student.name;
+    state.meta.grade = student.grade || '';
+    state.meta.major = student.major || '';
     state.meta.date  = '';
     state.studentId  = student.id;
     state.lastPlanId = null;
@@ -132,8 +132,8 @@ async function loadStudentTimesOnly(student) {
       state.lastPlanId = lastPlan.id;
     }
 
-    saveState();
     loadMetaFields();
+    saveState();
     renderHeader();
     renderBody();
     setStatus(`${student.name} بارگذاری شد`, '#16a34a');
