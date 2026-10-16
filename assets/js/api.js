@@ -195,8 +195,8 @@ async function loadLastPlan(studentId) {
 
     state.dayNotes = {};
 
-    saveState();
     loadMetaFields();
+    saveState();
     renderHeader();
     renderBody();
     const notes = document.getElementById('weekly-notes');
