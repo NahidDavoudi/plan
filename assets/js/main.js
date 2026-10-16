@@ -258,9 +258,15 @@ async function init() {
     }
     if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('active')) {
       const t = e.target;
-      const tag = t.tagName;
-      const inTree = t.closest && t.closest('#tree-list');
-      if (tag !== 'TEXTAREA' && tag !== 'SELECT' && tag !== 'BUTTON' && !inTree) {
+      const tag = t && t.tagName ? String(t.tagName).toUpperCase() : '';
+      const inTree = t instanceof Element && t.closest('#tree-list');
+      const isInteractive =
+        tag === 'BUTTON' ||
+        tag === 'A' ||
+        tag === 'SELECT' ||
+        tag === 'TEXTAREA' ||
+        (t instanceof Element && (t.matches('[role="button"]') || t.matches('[contenteditable="true"]') || t.closest('.activity-chip')));
+      if (!isInteractive && !inTree) {
         saveEvent();
       }
     }

@@ -190,8 +190,12 @@ function _openModalInternal(di, ti, eventId) {
   initTree();
   document.getElementById('modal-overlay').classList.add('active');
   setTimeout(() => {
-    const modal = document.querySelector('.modal');
-    if (modal) modal.focus();
+    const preset = document.getElementById('event-title-preset');
+    if (preset) preset.focus();
+    else {
+      const modal = document.querySelector('.modal');
+      if (modal) modal.focus();
+    }
   }, 100);
 }
 

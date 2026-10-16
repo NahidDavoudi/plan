@@ -121,7 +121,13 @@ async function loadStudentTimesOnly(student) {
         try {
           const times = typeof plan.times_json === 'string' ? JSON.parse(plan.times_json) : plan.times_json;
           if (times && times.length) state.times = normalizeTimes(times);
-        } catch (e) {}
+        } catch (e) {
+          console.error(e);
+          alert('خطا در بارگذاری برنامه');
+        }
+      } else if (!plan) {
+        console.error('پاسخ دریافت‌شده از سرور برای جزئیات برنامه نامعتبر است');
+        alert('خطا در بارگذاری برنامه');
       }
       state.lastPlanId = lastPlan.id;
     }
