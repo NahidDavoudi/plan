@@ -14,7 +14,7 @@
 <body>
   <div class="print-watermark">
     <!-- لوگوی خود را اینجا قرار دهید. جایگزین آدرس src زیر کنید -->
-    <img src="logoo.PNG/500x500" alt="Watermark" class="watermark-image">
+    <img src="logo.PNG/500x500" alt="Watermark" class="watermark-image">
   </div>
 <div class="toolbar no-print">
   <span class="toolbar-brand"><i data-lucide="clipboard-list" class="icon"></i> پلنر هفتگی مشاور</span>
