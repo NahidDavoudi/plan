@@ -1151,13 +1151,54 @@
   }
 
   /* ── Drag & Drop ── */
-  .event-chip { cursor: grab; user-select: none; }
-  .event-chip:active { cursor: grabbing; }
-  .sortable-ghost { opacity: 0.35; background: var(--accent-light) !important; border: 1px dashed var(--accent) !important; }
-  .event-chip.sortable-drag { transform: rotate(1.5deg) scale(1.02); box-shadow: 0 10px 25px rgba(0,0,0,0.18); opacity: 0.95; cursor: grabbing; position: relative; }
-  body.is-dragging .event-cell { transition: background 0.15s; }
-  body.is-dragging .event-cell:hover { background: var(--accent-light); }
-  body.is-copying .event-chip.sortable-drag::after { content: "+"; position: absolute; top: -6px; left: -6px; background: #16a34a; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+  .event-chip {
+      cursor: grab;
+      user-select: none;
+  }
+
+  .event-chip:active {
+      cursor: grabbing;
+  }
+
+  .sortable-ghost {
+      opacity: 0.35;
+      background: var(--accent-light) !important;
+      border: 1px dashed var(--accent) !important;
+  }
+
+  .event-chip.sortable-drag {
+      transform: rotate(1.5deg) scale(1.02);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+      opacity: 0.95;
+      cursor: grabbing;
+      position: relative;
+  }
+
+  body.is-dragging .event-cell {
+      transition: background 0.15s;
+  }
+
+  body.is-dragging .event-cell:hover {
+      background: var(--accent-light);
+  }
+
+  body.is-copying .event-chip.sortable-drag::after {
+      content: "+";
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      background: #16a34a;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
 
   /* ── منوی راست‌کلیک ایونت ── */
   #event-context-menu {
@@ -1174,7 +1215,9 @@
       overflow: hidden;
   }
 
-  #event-context-menu.visible { display: block; }
+  #event-context-menu.visible {
+      display: block;
+  }
 
   .ctx-item {
       display: flex;
@@ -1207,10 +1250,14 @@
       color: #dc2626;
   }
 
-  .ctx-item .icon-sm { flex: 0 0 auto; }
+  .ctx-item .icon-sm {
+      flex: 0 0 auto;
+  }
 
   /* ── دسته‌های resize ── */
-  .event-chip { position: relative; }
+  .event-chip {
+      position: relative;
+  }
 
   .resize-handle {
       position: absolute;
@@ -1220,7 +1267,9 @@
       transition: opacity 0.15s, background 0.15s;
   }
 
-  .event-chip:hover .resize-handle { opacity: 1; }
+  .event-chip:hover .resize-handle {
+      opacity: 1;
+  }
 
   /* لبهٔ انتهاییِ بازه (در RTL چپ، در LTR راست) ← گسترش در جهت ستون‌های زمان */
   .resize-handle-x {
@@ -1256,8 +1305,14 @@
       opacity: 0.7;
   }
 
-  body.is-resizing { cursor: grabbing; user-select: none; }
-  body.is-resizing .event-cell { transition: background 0.1s; }
+  body.is-resizing {
+      cursor: grabbing;
+      user-select: none;
+  }
+
+  body.is-resizing .event-cell {
+      transition: background 0.1s;
+  }
 
   /* پیش‌نمایش زندهٔ ناحیهٔ در حال resize */
   .resize-ghost {
@@ -1280,7 +1335,8 @@
   @media print {
       @page {
           size: A4 landscape;
-          margin: 3mm;
+          /* ↑ حاشیه بزرگ‌تر تا پرینتر لبه‌ها را نبرد */
+          margin: 7mm 6mm;
       }
 
       * {
@@ -1291,7 +1347,16 @@
       body {
           width: 100%;
           height: 100%;
+          margin: 0;
+          padding: 0;
           overflow: hidden;
+      }
+
+      body {
+          background: white;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          font-size: 7px;
       }
 
       .toolbar,
@@ -1303,18 +1368,15 @@
           display: none !important;
       }
 
-      body {
-          background: white;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-          font-size: 7px;
-      }
-
+      /* ── کل صفحه = ستون Flex؛ meta ثابت، grid کشسان ── */
       .container {
           padding: 0;
           margin: 0;
           max-width: 100%;
           width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
       }
 
       /* ── meta ── */
@@ -1322,6 +1384,8 @@
           border: 1px solid #aaa;
           box-shadow: none;
           margin-bottom: 2px;
+          flex: 0 0 auto;
+          /* ارتفاع طبیعی خودش */
       }
 
       .meta-logo {
@@ -1385,23 +1449,33 @@
           padding: 3px 8px !important;
       }
 
+      /* جلوگیری از بلندشدن بی‌رویه با یادداشت طولانی */
       .meta-notes-input {
           font-size: 6px !important;
           border: none !important;
           padding: 1px 0 !important;
           background: transparent !important;
           resize: none;
+          height: auto !important;
+          max-height: 16mm;
+          overflow: hidden;
       }
 
-      /* ── جدول ── */
+      /* ── grid = بقیهٔ صفحه ── */
       .grid-card {
           box-shadow: none;
           border: 1px solid #aaa;
           margin-top: 0;
+          flex: 1 1 auto;
+          /* هرچه ماند را پر می‌کند */
+          min-height: 0;
+          /* اجازهٔ جمع‌شدن در flex */
+          overflow: hidden;
       }
 
       .grid-scroll {
           overflow: visible !important;
+          height: 100%;
       }
 
       .add-time-th,
@@ -1415,13 +1489,14 @@
           min-width: 0 !important;
           table-layout: fixed;
           border-collapse: collapse;
+          height: 100% !important;
+          /* ← جدول = 100٪ ارتفاع grid-card */
           page-break-inside: avoid;
-          height: calc(100vh - 32mm) !important;
       }
 
-      /* هر ردیف ارتفاع یکسان از کل ارتفاع جدول */
+      /* ۷ ردیف روز = ۷ قسمت مساوی از ارتفاع tbody */
       tbody tr {
-          height: calc((100vh - 42mm) / 7) !important;
+          height: calc(100% / 7);
       }
 
       th,
@@ -1429,7 +1504,6 @@
           border: 0.5px solid #bbb !important;
       }
 
-      /* ستون روز — باریک چون عمودی نوشته میشه */
       thead tr th:first-child {
           width: 16px !important;
       }
@@ -1438,16 +1512,18 @@
           width: 16px !important;
       }
 
-      /* ستون زمان */
+      /* ── ستون زمان: پهن‌تر و فونت بزرگ‌تر ── */
       .time-cell {
-          width: 28px !important;
+          width: 34px !important;
+          /* ← از ۲۸ به ۳۴ */
           min-width: 0 !important;
           max-width: none !important;
           padding: 0 !important;
       }
 
       .time-edit {
-          font-size: 8.5px !important;
+          font-size: 10.5px !important;
+          /* ← از ۸.۵ به ۱۰.۵ */
           padding: 0.5px !important;
           line-height: 1.15 !important;
           white-space: nowrap;
@@ -1474,9 +1550,7 @@
           width: 18px !important;
       }
 
-      /* خانه‌های ایونت — ارتفاع از CSS variable (تنظیم smart) */
       tbody td {
-          height: inherit !important;
           overflow: hidden !important;
           padding: 1px !important;
       }
@@ -1937,24 +2011,4 @@
   .form-textarea {
       font-size: 14px !important;
       line-height: 1.7;
-  }
-
-  @media print {
-      body::after {
-          content: "Famo Konkur Academy";
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%) rotate(-35deg);
-          font-size: 56px;
-          font-weight: 900;
-          color: rgba(26, 39, 68, 0.055);
-          white-space: nowrap;
-          pointer-events: none;
-          z-index: 9999;
-          letter-spacing: 3px;
-          font-family: Arial, sans-serif;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-      }
   }
