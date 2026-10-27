@@ -8,6 +8,10 @@
 <title>پلنر هفتگی مشاور</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="<?php echo famo_asset('js/libs/lucide.min.js', 'assets/js/libs/lucide.min.js'); ?>"></script>
+<!-- Favicon Multi-size -->
+<link rel="icon" type="image/png" sizes="16x16" href="<?php echo famo_asset('images/favicon-16.png', $base . '../shared/images/favicon-16.png'); ?>">
+<link rel="icon" type="image/png" sizes="32x32" href="<?php echo famo_asset('images/favicon-32.png', $base . '../shared/images/favicon-32.png'); ?>">
+<link rel="icon" type="image/png" sizes="96x96" href="<?php echo famo_asset('images/favicon-96.png', $base . '../shared/images/favicon-96.png'); ?>">
 <link href="assets/style.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/jalalidatepicker@0.6.0/dist/jalalidatepicker.min.css" rel="stylesheet">
 </head>
