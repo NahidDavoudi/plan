@@ -1,8 +1,4 @@
 <?php
-/**
- * Plan-panel runtime configuration. Keep this file inside the deployment so
- * this application does not depend on the repository's shared/ directory.
- */
 
 if (!function_exists('famo_env')) {
     function famo_load_env(string $file): void
@@ -103,7 +99,8 @@ if (!function_exists('famo_env')) {
     function famo_config_script(): string
     {
         $config = [];
-        $config['assetUrl'] = famo_asset_base();
+        $assetBase = famo_asset_base();
+        $config['assetUrl'] = $assetBase;
         $config['apiUrl'] = famo_api_url();
 
         foreach ([
