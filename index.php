@@ -1,5 +1,5 @@
 <?php require_once __DIR__ . '/config.php';
-$base = 
+$base = '';
 ?>
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
